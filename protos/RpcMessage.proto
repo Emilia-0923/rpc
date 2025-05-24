@@ -1,0 +1,46 @@
+// cpp
+package rpc;
+// RpcRequst:
+message RpcRequest {
+    optional string method = 1;
+    repeated string params = 2;
+}
+
+// TopicRequest:
+message TopicRequest {
+    // 主题名称
+    required string topic = 1;
+    // 主题操作类型
+    required TopicOptype optype = 2;
+    // 主题操作参数(只有PUBLISH操作需要)
+    optional string message = 3;
+    
+    enum TopicOptype {
+        CREATE = 0;       // 创建主题
+        REMOVE = 1;       // 删除主题 
+        SUBSCRIBE = 2;    // 订阅主题
+        UNSUBSCRIBE = 3;  // 取消订阅主题
+        PUBLISH = 4;      // 发布主题
+    }
+}
+
+// ServiceRequest:
+message ServiceRequest {
+    // 服务名称
+    required string method = 1;
+    // 服务操作类型
+    required ServiceOptype optype = 2;
+    // 服务地址
+    required Address address = 3;
+    message Address {
+        required string ip = 1;
+        required uint32 port = 2;
+    }
+
+    enum ServiceOptype {
+        REGISTRY = 0;    // 注册服务
+        DISCOVERY = 1;    // 发现服务
+        ONLINE = 2;       // 上线服务
+        OFFLINE = 3;      // 下线服务
+    }
+}
