@@ -1,0 +1,88 @@
+# Visual Studio 2022 特定文件
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.suo
+*.opensdf
+*.sdf
+*.db
+*.VC.db
+*.VC.VC.opendb
+
+# 编译生成文件
+[Bb]in/
+[Oo]bj/
+x64/
+x86/
+[Ww]in32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+[Oo]ut/
+[Tt]humbs.db
+
+# 日志和临时文件
+*.log
+*.tmp
+*.temp
+*.tlog
+*.lastbuildstate
+*.idb
+*.ilk
+*.pch
+*.pdb
+*.ipch
+*.iobj
+*.ipdb
+*.cached
+*.unsuccessfulbuild
+
+# 其他 VS 文件
+.vs/
+.vscode/
+.ntvs_analysis.dat
+*.ncb
+*.aps
+*.res
+*.sbr
+*.bsc
+
+# NuGet 包
+[Nn]u[Pp]ackages/
+*.nupkg
+packages/
+
+# 其他
+_ReSharper.*
+*.dotCover
+*.swp
+*.userprefs
+*.user
+*.ruleset
+*.psess
+*.vsp
+*.vspx
+*.sap
+*.TestResult.xml
+*.VisualState.xml
+
+# 本地化文件
+*.local
+
+# 代码分析文件
+*.ruleset
+
+# Python 文件（如果有）
+__pycache__/
+*.py[cod]
+
+# macOS 文件（如果有）
+.DS_Store
+
+# 测试覆盖率结果
+*.gcda
+*.gcno
