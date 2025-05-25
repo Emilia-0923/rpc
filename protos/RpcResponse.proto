@@ -1,0 +1,49 @@
+// cpp
+syntax = "proto3";
+package msg;
+
+enum RetCode {
+    SUCCESS = 0;           //成功
+    PARSE_FAILED = 1;      //解析失败
+    INVALID_MSG = 2;       //无效消息
+    INVALID_PARAMS = 3;    //无效参数
+    DISCONNECTED = 4;      //连接断开
+    NOT_FOUND_SERVICE = 5; //未找到服务
+    NOT_FOUND_TOPIC = 6;   //未找到主题
+}
+
+// RpcResponse:
+message RpcResponse {
+    // 返回码
+    optional RetCode retcode = 1;
+    // 返回结果
+    optional string result = 2;
+}
+
+// TopicResponse:
+message TopicResponse {
+    // 返回码
+    optional RetCode retcode = 1;
+}
+
+// ServiceResponse:
+message ServiceResponse {
+    // 返回码
+    optional RetCode retcode = 1;
+    // 服务名称
+    optional string method = 2;
+    // 服务操作类型
+    optional ServiceOptype optype = 3;
+    // 地址列表
+    repeated Address address = 4;
+    message Address {
+        optional string ip = 1;
+        optional uint32 port = 2;
+    }
+    enum ServiceOptype {
+        REGISTRY = 0;    // 注册服务
+        DISCOVERY = 1;    // 发现服务
+        ONLINE = 2;       // 上线服务
+        OFFLINE = 3;      // 下线服务
+    }
+}

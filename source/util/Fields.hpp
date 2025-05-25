@@ -4,34 +4,47 @@
 
 namespace rpc
 {
+    namespace key {
+        const std::string method = "method";
+        const std::string params = "params";
+        const std::string topic = "topic";
+        const std::string message = "message";
+        const std::string optype = "optype";
+        const std::string address = "address";
+        const std::string ip = "ip";
+        const std::string port = "port";
+        const std::string retcode = "retcode";
+        const std::string result = "result";
+    }
+
     enum class MsgType {
         REQ_RPC = 0, //请求RPC
         RSP_RPC = 1, //响应RPC
-        REQ_TOPIC = 2, //请求Topic
-        RSP_TOPIC = 3, //响应Topic
-        REQ_SERVICE = 4, //请求Service
-        RSP_SERVICE = 5, //响应Service
+        REQ_TOPIC = 2, //请求主题
+        RSP_TOPIC = 3, //响应主题
+        REQ_SERVICE = 4, //请求服务
+        RSP_SERVICE = 5, //响应服务
     };
 
     enum class RetCode {
-        RCODE_SUCCESS = 0, //成功
-        RCODE_PARSE_FAILED = 1, //解析失败
-        RCODE_INVALID_MSG = 2, //无效消息
-        RCODE_INVALID_PARAMS = 3, //无效参数
-        RCODE_DISCONNECTED = 4, //连接断开
-        RCODE_NOT_FOUND_SERVICE = 5, //未找到服务
-        RCODE_NOT_FOUND_TOPIC = 6, //未找到Topic
+        SUCCESS = 0, //成功
+        PARSE_FAILED = 1, //解析失败
+        INVALID_MSG = 2, //无效消息
+        INVALID_PARAMS = 3, //无效参数
+        DISCONNECTED = 4, //连接断开
+        NOT_FOUND_SERVICE = 5, //未找到服务
+        NOT_FOUND_TOPIC = 6, //未找到主题
     };
 
     static std::string err_reason(RetCode code) {
         static std::unordered_map<RetCode, std::string> err_map = {
-            {RetCode::RCODE_SUCCESS, "处理成功"},
-            {RetCode::RCODE_PARSE_FAILED, "解析失败"},
-            {RetCode::RCODE_INVALID_MSG, "无效消息"},
-            {RetCode::RCODE_INVALID_PARAMS, "无效参数"},
-            {RetCode::RCODE_DISCONNECTED, "连接断开"},
-            {RetCode::RCODE_NOT_FOUND_SERVICE, "未找到服务"},
-            {RetCode::RCODE_NOT_FOUND_TOPIC, "未找到主题"},
+            {RetCode::SUCCESS, "处理成功"},
+            {RetCode::PARSE_FAILED, "解析失败"},
+            {RetCode::INVALID_MSG, "无效消息"},
+            {RetCode::INVALID_PARAMS, "无效参数"},
+            {RetCode::DISCONNECTED, "连接断开"},
+            {RetCode::NOT_FOUND_SERVICE, "未找到服务"},
+            {RetCode::NOT_FOUND_TOPIC, "未找到主题"},
         };
         auto it = err_map.find(code);
         if (it != err_map.end()) {

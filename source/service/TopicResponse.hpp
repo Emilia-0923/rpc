@@ -1,9 +1,12 @@
 #pragma once
 #include "../concrete/ProtoResponse.hpp"
+#include "../pbmessage/RpcResponse.pb.h"
 
-template<typename PbMessage>
-class ServiceResponse : public ProtoResponse<PbMessage>
+namespace rpc
 {
-public:
-    using TopicRequestPtr = std::shared_ptr<TopicRequest>;
-};
+    class TopicResponse : public ProtoResponse
+    {
+    public:
+        using ptr = std::shared_ptr<TopicResponse>;
+    };
+}

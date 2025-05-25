@@ -2,10 +2,13 @@
 #include "BaseBuffer.hpp"
 #include "BaseMessage.hpp"
 
-class BaseProtocol
+namespace rpc
 {
-public:
-    virtual bool can_process(const BaseBuffer::ptr& buffer) = 0;
-    virtual bool on_message(const BaseBuffer::ptr& buffer, const BaseMessage::ptr& msg) = 0;
-    virtual std::string serialize(const BaseMessage::ptr& msg) = 0;
-};
+    class BaseProtocol
+    {
+    public:
+        virtual bool can_process(const BaseBuffer::ptr& buffer) = 0;
+        virtual bool on_message(const BaseBuffer::ptr& buffer, const BaseMessage::ptr& msg) = 0;
+        virtual std::string serialize(const BaseMessage::ptr& msg) = 0;
+    };
+}

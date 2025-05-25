@@ -1,6 +1,7 @@
 // cpp
-package rpc;
-// RpcRequst:
+syntax = "proto3";
+package msg;
+// RpcRequest:
 message RpcRequest {
     optional string method = 1;
     repeated string params = 2;
@@ -9,9 +10,9 @@ message RpcRequest {
 // TopicRequest:
 message TopicRequest {
     // 主题名称
-    required string topic = 1;
+    optional string topic = 1;
     // 主题操作类型
-    required TopicOptype optype = 2;
+    optional TopicOptype optype = 2;
     // 主题操作参数(只有PUBLISH操作需要)
     optional string message = 3;
     
@@ -27,16 +28,15 @@ message TopicRequest {
 // ServiceRequest:
 message ServiceRequest {
     // 服务名称
-    required string method = 1;
+    optional string method = 1;
     // 服务操作类型
-    required ServiceOptype optype = 2;
+    optional ServiceOptype optype = 2;
     // 服务地址
-    required Address address = 3;
+    optional Address address = 3;
     message Address {
-        required string ip = 1;
-        required uint32 port = 2;
+        optional string ip = 1;
+        optional uint32 port = 2;
     }
-
     enum ServiceOptype {
         REGISTRY = 0;    // 注册服务
         DISCOVERY = 1;    // 发现服务
