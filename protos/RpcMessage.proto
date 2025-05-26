@@ -1,0 +1,60 @@
+// cpp
+syntax = "proto3";
+package msg;
+
+
+message Address {
+    optional string ip = 1;
+    optional int32 port = 2;
+}
+// RpcRequest:
+message RpcRequest {
+    optional string method = 1;
+    repeated string params = 2;
+}
+
+// TopicRequest:
+message TopicRequest {
+    // 主题名称
+    optional string topic = 1;
+    // 主题操作类型
+    optional int32 optype = 2;
+    // 主题操作参数(只有PUBLISH操作需要)
+    optional string message = 3;
+}
+
+// ServiceRequest:
+message ServiceRequest {
+    // 服务名称
+    optional string method = 1;
+    // 服务操作类型
+    optional int32 optype = 2;
+    // 服务地址
+    optional Address address = 3;
+}
+
+// RpcResponse:
+message RpcResponse {
+    // 返回码
+    optional int32 retcode = 1;
+    // 返回结果
+    optional string result = 2;
+}
+
+// TopicResponse:
+message TopicResponse {
+    // 返回码
+    optional int32 retcode = 1;
+}
+
+// ServiceResponse:
+message ServiceResponse {
+    // 返回码
+    optional int32 retcode = 1;
+    // 服务名称
+    optional string method = 2;
+    // 服务操作类型
+    optional int32 optype = 3;
+    // 地址列表
+    repeated Address address = 4;
+}

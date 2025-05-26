@@ -6,7 +6,7 @@ namespace rpc
 {
     class BaseMessage
     {
-    private:
+    protected:
         rpc::MsgType type;
         std::string id;
     public:

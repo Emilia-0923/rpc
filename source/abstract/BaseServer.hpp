@@ -6,7 +6,7 @@ namespace rpc
 {
     class BaseServer
     {
-    private:
+    protected:
         using conn_func = std::function<void(const BaseConnection::ptr& conn)>;
         using close_func = std::function<void(const BaseConnection::ptr& conn)>;
         using msg_func = std::function<void(const BaseConnection::ptr& conn, const BaseMessage::ptr& msg)>;

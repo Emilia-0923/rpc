@@ -6,7 +6,7 @@ namespace rpc
 {
     class BaseClient
     {
-    private:
+    protected:
         using conn_func = std::function<void(const BaseConnection::ptr& conn)>;
         using close_func = std::function<void(const BaseConnection::ptr& conn)>;
         using msg_func = std::function<void(const BaseConnection::ptr& conn, const BaseMessage::ptr& msg)>;
@@ -31,8 +31,8 @@ namespace rpc
         
         virtual void connect() = 0;
         virtual void shutdown() = 0;
-        virtual void send(const BaseMessage::ptr& msg) = 0;
+        virtual bool send(const BaseMessage::ptr& msg) = 0;
         virtual BaseConnection::ptr get_connection() = 0;
-        virtual bool connected() = 0;
+        virtual bool is_connected() = 0;
     };
 }
