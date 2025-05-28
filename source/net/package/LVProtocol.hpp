@@ -1,8 +1,8 @@
 #pragma once
 
 #include <arpa/inet.h>
-#include "../abstract/BaseProtocol.hpp"
-#include "../abstract/BaseBuffer.hpp"
+#include "../../abstract/BaseProtocol.hpp"
+#include "../../abstract/BaseBuffer.hpp"
 #include "../factory/MessageFactory.hpp"
 
 // |Length|VALUE|
@@ -11,14 +11,17 @@ namespace rpc
 {
     class LVProtocol : public BaseProtocol {
     private:
-        static const size_t length_field_size = sizeof(int32_t);
-        static const size_t msgtype_field_size = sizeof(int32_t);
-        static const size_t idlength_field_size = sizeof(int32_t);
+        static const int32_t length_field_size = sizeof(int32_t);
+        static const int32_t msgtype_field_size = sizeof(int32_t);
+        static const int32_t idlength_field_size = sizeof(int32_t);
     public:
         using ptr = std::shared_ptr<LVProtocol>;
         
         // 判断缓冲区中数据是否足够处理一条消息
         virtual bool can_process(const BaseBuffer::ptr& buffer) {
+            if (buffer->read_able_size() < length_field_size) {
+                return false;
+            }
             int32_t total_len = buffer->peek_int32();
             if (buffer->read_able_size() < (total_len + length_field_size)) {
                 return false;
@@ -31,7 +34,7 @@ namespace rpc
             int32_t total_len = buffer->read_int32();
             MsgType msgtype = static_cast<MsgType>(buffer->read_int32());
             int32_t id_length = buffer->read_int32();
-            int32_t body_length = total_len - length_field_size - msgtype_field_size - idlength_field_size - id_length;
+            int32_t body_length = total_len - msgtype_field_size - idlength_field_size - id_length;
             std::string id = buffer->retrieve_as_string(id_length);
             std::string body = buffer->retrieve_as_string(body_length);
             message = MessageFactory::create(msgtype);
@@ -53,9 +56,11 @@ namespace rpc
             std::string id = message->get_id();
             int32_t id_length = htonl(id.size());
             int32_t mtype = htonl(static_cast<int32_t>(message->get_type()));
-            int32_t total_length = htonl(length_field_size + msgtype_field_size + idlength_field_size + id_length + body.size());
+            int32_t h_total_length = msgtype_field_size + idlength_field_size + id.size() + body.size();
+            int32_t n_total_length = htonl(h_total_length);
             std::string result;
-            result.append((char*)&total_length, length_field_size);
+            result.reserve(h_total_length);
+            result.append((char*)&n_total_length, length_field_size);
             result.append((char*)&mtype, msgtype_field_size);
             result.append((char*)&id_length, idlength_field_size);
             result.append(id);

@@ -23,9 +23,8 @@ namespace rpc {
 
         void on_connected(const muduo::Connection::ptr& _conn) {
             if(_conn->is_connected()) {
-                conn = ConnectionFactory::create(_conn, protocol);
                 latch.count_down();
-                logging.info("连接建立成功!");
+                conn = ConnectionFactory::create(_conn, protocol);
             }
             else {
                 logging.info("连接断开!");
@@ -33,7 +32,7 @@ namespace rpc {
             }
         }
 
-        void on_message(const muduo::Connection::ptr& _conn, muduo::Buffer& _buf) {
+        void on_message(const muduo::Connection::ptr& _conn, muduo::Buffer* _buf) {
             auto base_buffer = BufferFactory::create(_buf);
             while(true) {
                 if(!protocol->can_process(base_buffer)) {
@@ -79,7 +78,12 @@ namespace rpc {
         }
 
         virtual bool send(const BaseMessage::ptr& msg) {
+            if(is_connected() == false) {
+                logging.error("连接断开，发送失败!");
+                return false;
+            }
             conn->send(msg);
+            return true;
         }
 
         virtual BaseConnection::ptr get_connection() {

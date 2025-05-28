@@ -25,7 +25,7 @@ namespace muduo
         static int create_event_fd() {
             int efd = eventfd(0, EFD_CLOEXEC | EFD_NONBLOCK);
             if (efd < 0) {
-                logging.fatal("event_fd 创建错误!");
+                logging.fatal("EventLoop::create_event_fd event_fd 创建错误!");
                 abort();
             }
             logging.info("EventFd 创建成功, event_fd: %d!", efd);
@@ -59,7 +59,7 @@ namespace muduo
                     return;
                 }
                 else {
-                    logging.fatal("读取 event_fd: %d 出错!", event_fd);
+                    logging.fatal("EventLoop::read_event_fd 读取 event_fd: %d 出错!", event_fd);
                     abort();
                 }
             }
@@ -128,8 +128,8 @@ namespace muduo
         }
 
         void assert_in_loop() {
-            if (thread_id == std::this_thread::get_id()) {
-                logging.fatal("线程执行任务错误!");
+            if (thread_id != std::this_thread::get_id()) {
+                logging.fatal("EventLoop::assert_in_loop 线程执行任务错误!");
                 abort();
             }
         }

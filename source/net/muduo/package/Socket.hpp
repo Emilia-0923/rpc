@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../util/Log.hpp"
+#include "../../../util/Log.hpp"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -66,7 +66,7 @@ namespace muduo
                 break;
             
             default:
-                logging.fatal("协议参数错误!");
+                logging.fatal("Socket 协议参数错误!");
                 abort();
             }
         }
@@ -82,7 +82,7 @@ namespace muduo
             socket_fd = socket(socket_type.domain, socket_type.type, socket_type.protocol);
             if (socket_fd < 0)
             {
-                logging.fatal("Socket 创建错误, %s: %d.", strerror(errno), errno);
+                logging.fatal("Socket::create 创建错误, %s: %d.", strerror(errno), errno);
                 exit(Error::SocketErr);
             }
             logging.info("Socket 创建成功, socket_fd: %d!", socket_fd);
@@ -108,7 +108,7 @@ namespace muduo
 
                 if (::bind(socket_fd, (sockaddr*)&local, sizeof(local)) < 0)
                 {
-                    logging.fatal("Socket 绑定端口错误, %s: %d.", strerror(errno), errno);
+                    logging.fatal("Socket::bind 绑定端口错误, %s: %d.", strerror(errno), errno);
                     exit(Error::BindErr);
                 }
                 logging.info("Socket 绑定端口成功, port: %d!", port);
@@ -119,7 +119,7 @@ namespace muduo
         {
             if (::listen(socket_fd, back_loging) < 0)
             {
-                logging.fatal("Socket 监听错误, %s: %d.", strerror(errno), errno);
+                logging.fatal("Socket::listen 监听错误, %s: %d.", strerror(errno), errno);
                 exit(Error::ListenErr);
             }
             logging.info("Socket 监听成功!");
@@ -158,7 +158,7 @@ namespace muduo
                 break;
             
             default:
-                logging.fatal("协议参数错误!");
+                logging.fatal("Socket::create_server 协议参数错误!");
                 abort();
             }
             if (block_flag) {
@@ -181,7 +181,7 @@ namespace muduo
                 create(AF_INET6, SOCK_STREAM, IPPROTO_TCP);
                 break;
             default:
-                logging.fatal("协议参数错误!");
+                logging.fatal("Socket::create_client 协议参数错误!");
                 abort();
             }
             return connect(ip, port);

@@ -4,7 +4,7 @@
 #include <sys/timerfd.h>
 #include <memory>
 #include <unordered_set>
-#include "../util/Log.hpp"
+#include "../../../util/Log.hpp"
 #include "Channel.hpp"
 
 namespace muduo
@@ -28,7 +28,7 @@ namespace muduo
         //析构时执行任务
         ~TimerTask() {
             if (valid == true) {
-                logging.debug("定时任务id: %d 被执行!", timer_id);
+                logging.debug("定时任务id: %lld 被执行!", timer_id);
                 task_cb();
             }
             release_cb();
@@ -75,7 +75,7 @@ namespace muduo
         static int create_timer_fd() {
             int timerfd = timerfd_create(CLOCK_MONOTONIC, 0);
             if (timerfd < 0) {
-                logging.fatal("timer_fd 创建错误: %s", strerror(errno));
+                logging.fatal("TimeWhell::create_timer_fd timer_fd 创建错误: %s", strerror(errno));
                 abort();
             }
             struct itimerspec itime;
@@ -92,7 +92,7 @@ namespace muduo
             uint64_t time;
             int ret = read(timer_fd, &time, sizeof(time));
             if (ret < 0) {
-                logging.fatal("读取timer_fd失败: %s", strerror(errno));
+                logging.fatal("TimerWheel::read_timer_fd 读取timer_fd失败: %s", strerror(errno));
                 abort();
             }
             return time;

@@ -4,7 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <cassert>
-#include "../util/Log.hpp"
+#include "../../../util/Log.hpp"
 
 namespace muduo
 {
@@ -50,13 +50,6 @@ namespace muduo
 
         Buffer()
             : buffer(default_buffer_size), read_idx(0), write_idx(0) {}
-
-        Buffer(Buffer&& other) noexcept 
-            : buffer(std::move(other.buffer)),
-            read_idx(other.read_idx),
-            write_idx(other.write_idx) {
-            other.read_idx = other.write_idx = 0;
-        }
 
         char* get_read_idx() {
             return begin() + read_idx;

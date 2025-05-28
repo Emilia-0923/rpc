@@ -22,7 +22,7 @@ namespace muduo
         
         using ptr = std::shared_ptr<Connection>;
         using conn_func = std::function<void(ptr)>;
-        using msg_func = std::function<void(ptr, Buffer&)>;
+        using msg_func = std::function<void(ptr, Buffer*)>;
         using close_func = std::function<void(ptr)>;
         using event_func = std::function<void(ptr)>;
 
@@ -33,7 +33,7 @@ namespace muduo
         //CONNECTING 连接建立完成,待处理状态
         //CONNECTED 连接可通信状态
         //DISCONNECTING 待关闭状态
-        enum Conn_Status {
+        enum Status {
             DISCONNECTED,
             CONNECTING,
             CONNECTED,
@@ -44,7 +44,7 @@ namespace muduo
         uint64_t id; //连接ID
 
         bool inactive_release; //是否启用非活跃销毁
-        Conn_Status status; //连接状态
+        Status status; //连接状态
         Socket socket; //套接字操作
         Channel conn_channel; //关联的Channel
         EventLoop* loop; //连接事件管理
@@ -74,7 +74,7 @@ namespace muduo
             in_buffer.write(buf, ret);
             if (in_buffer.read_able_size() > 0) {
                 //调用message_callback进行业务处理
-                msg_cb(shared_from_this(), in_buffer);
+                msg_cb(shared_from_this(), &in_buffer);
             }
         }
 
@@ -83,7 +83,7 @@ namespace muduo
             ssize_t ret = socket.non_block_send(out_buffer.get_read_idx(), out_buffer.read_able_size());
             if (ret < 0) {
                 if (in_buffer.read_able_size() > 0) {
-                    msg_cb(shared_from_this(), in_buffer);
+                    msg_cb(shared_from_this(), &in_buffer);
                 }
                 release();
                 return;
@@ -103,7 +103,7 @@ namespace muduo
         //设置到连接的channel中的关闭回调, 描述符断开时触发
         void handler_close() {
             if (in_buffer.read_able_size() > 0) {
-                msg_cb(shared_from_this(), in_buffer);
+                msg_cb(shared_from_this(), &in_buffer);
             }
             release();
         }
@@ -128,7 +128,7 @@ namespace muduo
             //修改连接状态
             if(status != CONNECTING)
             {
-                logging.fatal("错误! 连接状态不为预期状态");
+                logging.fatal("Connection::established_in_loop 错误! 连接状态不为预期状态");
                 abort();
             }
             status = CONNECTED;
@@ -140,16 +140,21 @@ namespace muduo
 
         //释放接口
         void release_in_loop() {
-            if(status == DISCONNECTED){
+            if (status == DISCONNECTED) {
+                logging.warning("连接已经被释放，跳过重复释放操作");
                 return;
             }
             status = DISCONNECTED;
+            //先取消事件关心
+            conn_channel.disable_all();
             //移除连接的事件监控
             conn_channel.remove();
             //关闭描述符
             socket.remove();
             //取消定时销毁任务
-            disable_inactive_release_in_loop();
+            if(loop->has_timer(id)) {
+                disable_inactive_release_in_loop();
+            }
             //调用关闭回调函数
             if (close_cb) {
                 close_cb(shared_from_this());
@@ -160,11 +165,12 @@ namespace muduo
         }
         
         //数据放到了发送缓冲区，启动可写事件监控
-        void send_in_loop(const char* _data, size_t _len) {
+        void send_in_loop(Buffer& _buffer) {
             if (DISCONNECTED) {
                 return;
             }
-            out_buffer.write(_data, _len);
+            // 读取前四个字节强转成uint32_t，先打印原始数据，再打印从网络字节序转换后的数据
+            out_buffer.write_buffer(_buffer);
             if (conn_channel.write_able() == false) {
                 conn_channel.enable_write();
             }
@@ -175,7 +181,7 @@ namespace muduo
             status = DISCONNECTING;
             if (in_buffer.read_able_size() > 0) {
                 if (msg_cb) {
-                    msg_cb(shared_from_this(), in_buffer);
+                    msg_cb(shared_from_this(), &in_buffer);
                 }
             }
             if (out_buffer.read_able_size() > 0) {
@@ -242,6 +248,10 @@ namespace muduo
             return id;
         }
 
+        EventLoop* get_loop() {
+            return loop;
+        }
+
         bool is_connected() {
             return status == CONNECTED;
         }
@@ -287,7 +297,9 @@ namespace muduo
 
         //发送数据,数据放到发送缓冲区，启动写事件监控
         void send(const char* _data, size_t _len) {
-            loop->run_in_loop(std::bind(&Connection::send_in_loop, this, _data, _len));
+            Buffer buf;
+            buf.write(_data, _len);
+            loop->run_in_loop(std::bind(&Connection::send_in_loop, this, std::move(buf)));
         }
 
         //关闭连接

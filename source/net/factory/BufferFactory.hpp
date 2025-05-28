@@ -8,7 +8,7 @@ namespace rpc
     public:
         template <typename ...Args>
         static BaseBuffer::ptr create(Args&& ...args) {
-            return std::make_shared<MuduoBuffer>(std::forward(args));
+            return std::make_shared<MuduoBuffer>(std::forward<Args>(args)...);
         }
     };
 }

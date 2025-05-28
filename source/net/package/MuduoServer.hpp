@@ -9,11 +9,12 @@
 namespace rpc {
     class MuduoServer : public BaseServer {
     private:
-        static const int max_data_length = 1 << 16; // 64k
         BaseProtocol::ptr protocol;
         muduo::TcpServer server;
         std::mutex mtx;
         std::unordered_map<muduo::Connection::ptr, BaseConnection::ptr> connections;
+
+        static const int max_data_length = 1 << 16; // 64k
 
         void on_connected(const muduo::Connection::ptr& conn) {
             if(conn->is_connected()) {
@@ -43,7 +44,7 @@ namespace rpc {
             }
         }
 
-        void on_message(const muduo::Connection::ptr& conn, muduo::Buffer& buf) {
+        void on_message(const muduo::Connection::ptr& conn, muduo::Buffer* buf) {
             auto base_buffer = BufferFactory::create(buf);
             while(true) {
                 if(!protocol->can_process(base_buffer)) {

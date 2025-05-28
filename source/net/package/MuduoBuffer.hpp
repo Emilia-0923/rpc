@@ -29,6 +29,7 @@ namespace rpc
             return ntohl(value); // 网络字节序转主机字节序
         }
 
+        // 字节序未转换
         virtual void retrieve_int32(int32_t& _data) override {
             if (buffer->read_able_size() < sizeof(int32_t)) {
                 logging.error("缓冲区数据不足，无法读取int32_t类型数据");
@@ -40,7 +41,7 @@ namespace rpc
         virtual int32_t read_int32() override {
             int32_t value;
             retrieve_int32(value);
-            return value;
+            return ntohl(value);
         }
 
         virtual std::string retrieve_as_string(size_t len) override {

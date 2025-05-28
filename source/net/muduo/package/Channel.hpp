@@ -3,7 +3,7 @@
 #include <iostream>
 #include <functional>
 #include <sys/epoll.h>
-#include "../util/Log.hpp"
+#include "../../../util/Log.hpp"
 
 namespace muduo
 {
@@ -123,6 +123,7 @@ namespace muduo
         void disable_all() {
             logging.debug("fd: %d, 清除了所有的状态!", fd);
             event = 0;
+            update();
         }
 
         //执行回调函数    

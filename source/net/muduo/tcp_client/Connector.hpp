@@ -1,27 +1,45 @@
 #pragma once
 
 #include "../package/EventLoop.hpp"
-#include "Channel.hpp"
-#include "Socket.hpp"
-#include "../util/Log.hpp"
+#include "../package/Channel.hpp"
+#include "../package/Socket.hpp"
+#include "../../../util/Log.hpp"
 
 namespace muduo {
     class Connector : public std::enable_shared_from_this<Connector> {
-    public:
+    private:
+        enum State { DISCONNECTED, CONNECTING, CONNECTED };
+        const int max_retry_delay = 8;
+        const int init_retry_delay = 1;
+        uint64_t timer_id = reinterpret_cast<uint64_t>(this);
+
         using conn_cb = std::function<void(int sockfd)>;
+
+        EventLoop* loop;
+        std::string server_ip;
+        uint16_t server_port;
+        bool is_connect;
+        State state;
+        int socket_fd;
+        std::unique_ptr<Channel> channel;
+        conn_cb new_conn_cb;
+        int retry_delay;
+        
+    public:
+        using ptr = std::shared_ptr<Connector>;
 
         Connector(EventLoop* loop, const std::string& ip, uint16_t port)
             : loop(loop),
             server_ip(ip),
             server_port(port),
-            connect(false),
-            state(k_disconnected),
-            socket_fd(-1),
-            retry_delay_ms(init_retry_delay_ms) {}
+            is_connect(false),
+            state(DISCONNECTED),
+            retry_delay(init_retry_delay) {}
 
         ~Connector() {
-            if (socket_fd != -1) {
-                ::close(socket_fd);
+            if(channel) {
+                logging.fatal("~Connector channel 未知错误");
+                abort();
             }
         }
 
@@ -30,77 +48,97 @@ namespace muduo {
         }
 
         void start() {
-            connect = true;
-            loop->run_in_loop(std::bind(&Connector::start_in_loop, this));
+            is_connect = true;
+            loop->run_in_loop(std::bind(&Connector::start_in_loop, shared_from_this()));
         }
 
         void restart() {
-            retry_delay_ms = init_retry_delay_ms;
-            start();
+            loop->assert_in_loop();
+            state = DISCONNECTED;
+            retry_delay = init_retry_delay;
+            is_connect = true;
+            start_in_loop();
         }
 
         void stop() {
-            connect = false;
-            loop->run_in_loop(std::bind(&Connector::stop_in_loop, this));
+            is_connect = false;
+            loop->push_task(std::bind(&Connector::stop_in_loop, shared_from_this()));
+            if(loop->has_timer(timer_id)) {
+                loop->timer_cancel(timer_id);
+            }
         }
 
     private:
-        enum State { k_disconnected, k_connecting, k_connected };
-        static const int max_retry_delay_ms = 30000;
-        static const int init_retry_delay_ms = 500;
 
         void set_state(State _state) { state = _state; }
 
         void start_in_loop() {
             loop->assert_in_loop();
-            if (state != k_disconnected) return;
+            if (state != DISCONNECTED) {
+                logging.fatal("Connector::start_in_loop 状态错误: %d", state);
+            }
 
-            if (connect) {
-                connect_();
+            if (is_connect) {
+                connect();
+            }
+            else {
+                logging.info("未开启连接");
             }
         }
 
         void stop_in_loop() {
             loop->assert_in_loop();
-            if (state == k_connecting) {
-                state = k_disconnected;
-                ::close(socket_fd);
-                socket_fd = -1;
+            if (state == CONNECTING) {
+                state = DISCONNECTED;
+                int socket_fd = remove_and_reset_channel();
+                retry(socket_fd);
             }
         }
 
-        void connect_() {
-            socket_fd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
-            if (socket_fd < 0) {
-                logging.error("创建 socket 错误: %s", strerror(errno));
-                retry();
-                return;
-            }
+        void connect() {
+            int socket_fd = ::socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK | SOCK_CLOEXEC, 0);
 
             sockaddr_in addr{};
             addr.sin_family = AF_INET;
             addr.sin_port = htons(server_port);
             inet_pton(AF_INET, server_ip.c_str(), &addr.sin_addr);
-
             int ret = ::connect(socket_fd, reinterpret_cast<sockaddr*>(&addr), sizeof(addr));
-            if (ret < 0 && errno != EINPROGRESS && errno != EINTR && errno != EISCONN) {
-                logging.error("连接失败: %s", strerror(errno));
+            int err = ret == 0 ? 0 : errno;
+            switch (err)//错误处理
+            {
+                case 0: case EINPROGRESS: case EINTR: case EISCONN:
+                connecting(socket_fd);
+                break;
+                case EAGAIN: case EADDRINUSE: case EADDRNOTAVAIL: case ECONNREFUSED: case ENETUNREACH:
+                retry(socket_fd);
+                break;
+                case EACCES: case EPERM: case EAFNOSUPPORT: case EALREADY: case EBADF: case EFAULT: case ENOTSOCK:
                 ::close(socket_fd);
-                socket_fd = -1;
-                retry();
-                return;
+                break;
+                default:
+                ::close(socket_fd);
+                break;
             }
+        }
 
-            state = k_connecting;
+        void connecting(int socket_fd) {
+            state = CONNECTING;
+            if(channel) {
+                logging.fatal("Connector::connecting channel 未知错误");
+                abort();
+            }
             channel.reset(new Channel(socket_fd, loop));
-            channel->set_write_cb(std::bind(&Connector::handle_write, this));
-            channel->set_error_cb(std::bind(&Connector::handle_error, this));
+            channel->set_write_cb(std::bind(&Connector::handle_write, shared_from_this()));
+            channel->set_error_cb(std::bind(&Connector::handle_error, shared_from_this()));
             channel->enable_write();
         }
 
         void handle_write() {
-            if (state != k_connecting) return;
-
+            if (state != CONNECTING) {
+                logging.fatal("Connector::handle_writes 状态错误: %d", state);
+                abort();
+            }
+            int socket_fd = remove_and_reset_channel();
             int err = 0;
             socklen_t len = sizeof(err);
             if (::getsockopt(socket_fd, SOL_SOCKET, SO_ERROR, &err, &len) < 0) {
@@ -110,21 +148,33 @@ namespace muduo {
 
             if (err || is_self_connect(socket_fd)) {
                 logging.warning("连接失败: %s", strerror(err));
-                retry();
-            } else {
-                state = k_connected;
-                if (connect) {
-                    if (new_conn_cb) {
-                        new_conn_cb(socket_fd);
-                        socket_fd = -1; // 所有权已转移
-                    }
+                retry(socket_fd);
+            }
+            else {
+                state = CONNECTED;
+                if (is_connect) {
+                    new_conn_cb(socket_fd);
+                }
+                else {
+                    logging.info("未开启连接");
+                    // 关闭socket
+                    ::close(socket_fd);
                 }
             }
         }
 
         void handle_error() {
-            logging.warning("连接器发生错误");
-            retry();
+            if(state == CONNECTING) {
+                int socket_fd = remove_and_reset_channel();
+                int err = 0;
+                socklen_t len = sizeof(err);
+                if (::getsockopt(socket_fd, SOL_SOCKET, SO_ERROR, &err, &len) < 0) {
+                    logging.error("获取 socket 选项错误: %s", strerror(errno));
+                    err = errno;
+                }
+                logging.warning("连接失败: %s", strerror(err));
+                retry(socket_fd);
+            }
         }
 
         bool is_self_connect(int sockfd) {
@@ -136,16 +186,14 @@ namespace muduo {
                 local.sin_addr.s_addr == peer.sin_addr.s_addr;
         }
 
-        void retry() {
+        void retry(int socket_fd) {
             ::close(socket_fd);
-            socket_fd = -1;
-            state = k_disconnected;
-            if (connect) {
-                logging.info("将在 %dms 后重试连接 %s:%d",
-                            retry_delay_ms, server_ip.c_str(), server_port);
-                uint64_t timer_id = reinterpret_cast<uint64_t>(this) + retry_delay_ms;
-                loop->timer_add(timer_id, retry_delay_ms, std::bind(&Connector::start_in_loop, shared_from_this()));
-                retry_delay_ms = std::min(retry_delay_ms * 2, max_retry_delay_ms);
+            state = DISCONNECTED;
+            if (is_connect) {
+                logging.info("将在 %ds 后重试连接 %s:%d",
+                            retry_delay, server_ip.c_str(), server_port);
+                loop->timer_add(timer_id, retry_delay, std::bind(&Connector::start_in_loop, shared_from_this()));
+                retry_delay = std::min(retry_delay * 2, max_retry_delay);
             }
         }
 
@@ -153,15 +201,12 @@ namespace muduo {
             channel.reset();
         }
 
-    private:
-        EventLoop* loop;
-        std::string server_ip;
-        uint16_t server_port;
-        bool connect;
-        State state;
-        int socket_fd;
-        std::unique_ptr<Channel> channel;
-        conn_cb new_conn_cb;
-        int retry_delay_ms;
+        int remove_and_reset_channel() {
+            channel->disable_all();
+            channel->remove();
+            int socket_fd = channel->get_fd();
+            loop->push_task(std::bind(&Connector::reset_channel, shared_from_this()));
+            return socket_fd;
+        }
     };
 }
