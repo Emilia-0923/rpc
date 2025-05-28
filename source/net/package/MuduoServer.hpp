@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../abstract/BaseServer.hpp"
+#include "../abstract/BaseServer.hpp"
 #include "../factory/BufferFactory.hpp"
 #include "../factory/ConnectionFactory.hpp"
 #include "../factory/ProtocolFactory.hpp" 

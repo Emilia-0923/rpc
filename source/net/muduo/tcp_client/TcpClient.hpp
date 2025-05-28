@@ -58,15 +58,15 @@ namespace muduo {
             retry = true;
         }
 
-        void set_conn_cb(conn_func cb) {
+        void set_conn_cb(const conn_func& cb) {
             conn_cb = cb;
         }
 
-        void set_msg_cb(msg_func cb) {
+        void set_msg_cb(const msg_func& cb) {
             msg_cb = cb;
         }
 
-        void set_close_callback(close_func cb) {
+        void set_close_cb(const close_func& cb) {
             close_cb = cb;
         }
 

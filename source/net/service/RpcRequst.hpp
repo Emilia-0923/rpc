@@ -39,32 +39,34 @@ namespace rpc
             message->GetReflection()->SetString(message.get(), method_field, _method);
         }
 
-        std::vector<std::string> get_params() {
+        std::vector<PBValue> get_params() {
             const PBDescriptor* descriptor = message->GetDescriptor();
             const PBFieldDescriptor* params_field = descriptor->FindFieldByName(key::params);
             const PBReflection* reflection = message->GetReflection();
-            
-            std::vector<std::string> params_vec;
+
+            std::vector<PBValue> params_vec;
             int field_size = reflection->FieldSize(*message, params_field);
-            
-            // 遍历 repeated 字段中的每个元素
+
             for (int i = 0; i < field_size; ++i) {
-                std::string param = reflection->GetRepeatedString(*message, params_field, i);
-                params_vec.push_back(param);
+                PBValue value;
+                const auto& val = reflection->GetRepeatedMessage(*message, params_field, i);
+                val.UnpackTo(&value);
+                params_vec.push_back(value);
             }
-            
+
             return params_vec;
         }
 
-        void set_params(const std::vector<std::string>& _params) {
+        void RpcRequest::set_params(const std::vector<PBValue>& _params) {
             const PBDescriptor* descriptor = message->GetDescriptor();
             const PBFieldDescriptor* params_field = descriptor->FindFieldByName(key::params);
             const PBReflection* reflection = message->GetReflection();
-            // 清空现有的 repeated 字段
+
             reflection->ClearField(message.get(), params_field);
-            // 逐个添加新的参数到 repeated 字段
-            for (const auto& param : _params) {
-                reflection->AddString(message.get(), params_field, param);
+
+            for (const auto& value : _params) {
+                PBMessage* msg = reflection->AddMessage(message.get(), params_field);
+                msg->CopyFrom(value);
             }
         }
     };

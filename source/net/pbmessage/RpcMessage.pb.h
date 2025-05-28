@@ -30,6 +30,7 @@
 #include <google/protobuf/repeated_field.h>  // IWYU pragma: export
 #include <google/protobuf/extension_set.h>  // IWYU pragma: export
 #include <google/protobuf/unknown_field_set.h>
+#include <google/protobuf/struct.pb.h>
 // @@protoc_insertion_point(includes)
 #include <google/protobuf/port_def.inc>
 #define PROTOBUF_INTERNAL_EXPORT_RpcMessage_2eproto
@@ -377,29 +378,23 @@ class RpcRequest final :
     kParamsFieldNumber = 2,
     kMethodFieldNumber = 1,
   };
-  // repeated string params = 2;
+  // repeated .google.protobuf.Value params = 2;
   int params_size() const;
   private:
   int _internal_params_size() const;
   public:
   void clear_params();
-  const std::string& params(int index) const;
-  std::string* mutable_params(int index);
-  void set_params(int index, const std::string& value);
-  void set_params(int index, std::string&& value);
-  void set_params(int index, const char* value);
-  void set_params(int index, const char* value, size_t size);
-  std::string* add_params();
-  void add_params(const std::string& value);
-  void add_params(std::string&& value);
-  void add_params(const char* value);
-  void add_params(const char* value, size_t size);
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>& params() const;
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>* mutable_params();
+  ::PROTOBUF_NAMESPACE_ID::Value* mutable_params(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::PROTOBUF_NAMESPACE_ID::Value >*
+      mutable_params();
   private:
-  const std::string& _internal_params(int index) const;
-  std::string* _internal_add_params();
+  const ::PROTOBUF_NAMESPACE_ID::Value& _internal_params(int index) const;
+  ::PROTOBUF_NAMESPACE_ID::Value* _internal_add_params();
   public:
+  const ::PROTOBUF_NAMESPACE_ID::Value& params(int index) const;
+  ::PROTOBUF_NAMESPACE_ID::Value* add_params();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::PROTOBUF_NAMESPACE_ID::Value >&
+      params() const;
 
   // optional string method = 1;
   bool has_method() const;
@@ -429,7 +424,7 @@ class RpcRequest final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string> params_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::PROTOBUF_NAMESPACE_ID::Value > params_;
     ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr method_;
   };
   union { Impl_ _impl_; };
@@ -947,23 +942,23 @@ class RpcResponse final :
     kResultFieldNumber = 2,
     kRetcodeFieldNumber = 1,
   };
-  // optional string result = 2;
+  // optional .google.protobuf.Value result = 2;
   bool has_result() const;
   private:
   bool _internal_has_result() const;
   public:
   void clear_result();
-  const std::string& result() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_result(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_result();
-  PROTOBUF_NODISCARD std::string* release_result();
-  void set_allocated_result(std::string* result);
+  const ::PROTOBUF_NAMESPACE_ID::Value& result() const;
+  PROTOBUF_NODISCARD ::PROTOBUF_NAMESPACE_ID::Value* release_result();
+  ::PROTOBUF_NAMESPACE_ID::Value* mutable_result();
+  void set_allocated_result(::PROTOBUF_NAMESPACE_ID::Value* result);
   private:
-  const std::string& _internal_result() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_result(const std::string& value);
-  std::string* _internal_mutable_result();
+  const ::PROTOBUF_NAMESPACE_ID::Value& _internal_result() const;
+  ::PROTOBUF_NAMESPACE_ID::Value* _internal_mutable_result();
   public:
+  void unsafe_arena_set_allocated_result(
+      ::PROTOBUF_NAMESPACE_ID::Value* result);
+  ::PROTOBUF_NAMESPACE_ID::Value* unsafe_arena_release_result();
 
   // optional int32 retcode = 1;
   bool has_retcode() const;
@@ -988,7 +983,7 @@ class RpcResponse final :
   struct Impl_ {
     ::PROTOBUF_NAMESPACE_ID::internal::HasBits<1> _has_bits_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr result_;
+    ::PROTOBUF_NAMESPACE_ID::Value* result_;
     int32_t retcode_;
   };
   union { Impl_ _impl_; };
@@ -1534,79 +1529,41 @@ inline void RpcRequest::set_allocated_method(std::string* method) {
   // @@protoc_insertion_point(field_set_allocated:msg.RpcRequest.method)
 }
 
-// repeated string params = 2;
+// repeated .google.protobuf.Value params = 2;
 inline int RpcRequest::_internal_params_size() const {
   return _impl_.params_.size();
 }
 inline int RpcRequest::params_size() const {
   return _internal_params_size();
 }
-inline void RpcRequest::clear_params() {
-  _impl_.params_.Clear();
-}
-inline std::string* RpcRequest::add_params() {
-  std::string* _s = _internal_add_params();
-  // @@protoc_insertion_point(field_add_mutable:msg.RpcRequest.params)
-  return _s;
-}
-inline const std::string& RpcRequest::_internal_params(int index) const {
-  return _impl_.params_.Get(index);
-}
-inline const std::string& RpcRequest::params(int index) const {
-  // @@protoc_insertion_point(field_get:msg.RpcRequest.params)
-  return _internal_params(index);
-}
-inline std::string* RpcRequest::mutable_params(int index) {
+inline ::PROTOBUF_NAMESPACE_ID::Value* RpcRequest::mutable_params(int index) {
   // @@protoc_insertion_point(field_mutable:msg.RpcRequest.params)
   return _impl_.params_.Mutable(index);
 }
-inline void RpcRequest::set_params(int index, const std::string& value) {
-  _impl_.params_.Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set:msg.RpcRequest.params)
-}
-inline void RpcRequest::set_params(int index, std::string&& value) {
-  _impl_.params_.Mutable(index)->assign(std::move(value));
-  // @@protoc_insertion_point(field_set:msg.RpcRequest.params)
-}
-inline void RpcRequest::set_params(int index, const char* value) {
-  GOOGLE_DCHECK(value != nullptr);
-  _impl_.params_.Mutable(index)->assign(value);
-  // @@protoc_insertion_point(field_set_char:msg.RpcRequest.params)
-}
-inline void RpcRequest::set_params(int index, const char* value, size_t size) {
-  _impl_.params_.Mutable(index)->assign(
-    reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_set_pointer:msg.RpcRequest.params)
-}
-inline std::string* RpcRequest::_internal_add_params() {
-  return _impl_.params_.Add();
-}
-inline void RpcRequest::add_params(const std::string& value) {
-  _impl_.params_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add:msg.RpcRequest.params)
-}
-inline void RpcRequest::add_params(std::string&& value) {
-  _impl_.params_.Add(std::move(value));
-  // @@protoc_insertion_point(field_add:msg.RpcRequest.params)
-}
-inline void RpcRequest::add_params(const char* value) {
-  GOOGLE_DCHECK(value != nullptr);
-  _impl_.params_.Add()->assign(value);
-  // @@protoc_insertion_point(field_add_char:msg.RpcRequest.params)
-}
-inline void RpcRequest::add_params(const char* value, size_t size) {
-  _impl_.params_.Add()->assign(reinterpret_cast<const char*>(value), size);
-  // @@protoc_insertion_point(field_add_pointer:msg.RpcRequest.params)
-}
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>&
-RpcRequest::params() const {
-  // @@protoc_insertion_point(field_list:msg.RpcRequest.params)
-  return _impl_.params_;
-}
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField<std::string>*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::PROTOBUF_NAMESPACE_ID::Value >*
 RpcRequest::mutable_params() {
   // @@protoc_insertion_point(field_mutable_list:msg.RpcRequest.params)
   return &_impl_.params_;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Value& RpcRequest::_internal_params(int index) const {
+  return _impl_.params_.Get(index);
+}
+inline const ::PROTOBUF_NAMESPACE_ID::Value& RpcRequest::params(int index) const {
+  // @@protoc_insertion_point(field_get:msg.RpcRequest.params)
+  return _internal_params(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::Value* RpcRequest::_internal_add_params() {
+  return _impl_.params_.Add();
+}
+inline ::PROTOBUF_NAMESPACE_ID::Value* RpcRequest::add_params() {
+  ::PROTOBUF_NAMESPACE_ID::Value* _add = _internal_add_params();
+  // @@protoc_insertion_point(field_add:msg.RpcRequest.params)
+  return _add;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::PROTOBUF_NAMESPACE_ID::Value >&
+RpcRequest::params() const {
+  // @@protoc_insertion_point(field_list:msg.RpcRequest.params)
+  return _impl_.params_;
 }
 
 // -------------------------------------------------------------------
@@ -1999,71 +1956,90 @@ inline void RpcResponse::set_retcode(int32_t value) {
   // @@protoc_insertion_point(field_set:msg.RpcResponse.retcode)
 }
 
-// optional string result = 2;
+// optional .google.protobuf.Value result = 2;
 inline bool RpcResponse::_internal_has_result() const {
   bool value = (_impl_._has_bits_[0] & 0x00000001u) != 0;
+  PROTOBUF_ASSUME(!value || _impl_.result_ != nullptr);
   return value;
 }
 inline bool RpcResponse::has_result() const {
   return _internal_has_result();
 }
-inline void RpcResponse::clear_result() {
-  _impl_.result_.ClearToEmpty();
-  _impl_._has_bits_[0] &= ~0x00000001u;
+inline const ::PROTOBUF_NAMESPACE_ID::Value& RpcResponse::_internal_result() const {
+  const ::PROTOBUF_NAMESPACE_ID::Value* p = _impl_.result_;
+  return p != nullptr ? *p : reinterpret_cast<const ::PROTOBUF_NAMESPACE_ID::Value&>(
+      ::PROTOBUF_NAMESPACE_ID::_Value_default_instance_);
 }
-inline const std::string& RpcResponse::result() const {
+inline const ::PROTOBUF_NAMESPACE_ID::Value& RpcResponse::result() const {
   // @@protoc_insertion_point(field_get:msg.RpcResponse.result)
   return _internal_result();
 }
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void RpcResponse::set_result(ArgT0&& arg0, ArgT... args) {
- _impl_._has_bits_[0] |= 0x00000001u;
- _impl_.result_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:msg.RpcResponse.result)
-}
-inline std::string* RpcResponse::mutable_result() {
-  std::string* _s = _internal_mutable_result();
-  // @@protoc_insertion_point(field_mutable:msg.RpcResponse.result)
-  return _s;
-}
-inline const std::string& RpcResponse::_internal_result() const {
-  return _impl_.result_.Get();
-}
-inline void RpcResponse::_internal_set_result(const std::string& value) {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  _impl_.result_.Set(value, GetArenaForAllocation());
-}
-inline std::string* RpcResponse::_internal_mutable_result() {
-  _impl_._has_bits_[0] |= 0x00000001u;
-  return _impl_.result_.Mutable(GetArenaForAllocation());
-}
-inline std::string* RpcResponse::release_result() {
-  // @@protoc_insertion_point(field_release:msg.RpcResponse.result)
-  if (!_internal_has_result()) {
-    return nullptr;
+inline void RpcResponse::unsafe_arena_set_allocated_result(
+    ::PROTOBUF_NAMESPACE_ID::Value* result) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.result_);
   }
-  _impl_._has_bits_[0] &= ~0x00000001u;
-  auto* p = _impl_.result_.Release();
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.result_.IsDefault()) {
-    _impl_.result_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  return p;
-}
-inline void RpcResponse::set_allocated_result(std::string* result) {
-  if (result != nullptr) {
+  _impl_.result_ = result;
+  if (result) {
     _impl_._has_bits_[0] |= 0x00000001u;
   } else {
     _impl_._has_bits_[0] &= ~0x00000001u;
   }
-  _impl_.result_.SetAllocated(result, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.result_.IsDefault()) {
-    _impl_.result_.Set("", GetArenaForAllocation());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:msg.RpcResponse.result)
+}
+inline ::PROTOBUF_NAMESPACE_ID::Value* RpcResponse::release_result() {
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::PROTOBUF_NAMESPACE_ID::Value* temp = _impl_.result_;
+  _impl_.result_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
   }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
+}
+inline ::PROTOBUF_NAMESPACE_ID::Value* RpcResponse::unsafe_arena_release_result() {
+  // @@protoc_insertion_point(field_release:msg.RpcResponse.result)
+  _impl_._has_bits_[0] &= ~0x00000001u;
+  ::PROTOBUF_NAMESPACE_ID::Value* temp = _impl_.result_;
+  _impl_.result_ = nullptr;
+  return temp;
+}
+inline ::PROTOBUF_NAMESPACE_ID::Value* RpcResponse::_internal_mutable_result() {
+  _impl_._has_bits_[0] |= 0x00000001u;
+  if (_impl_.result_ == nullptr) {
+    auto* p = CreateMaybeMessage<::PROTOBUF_NAMESPACE_ID::Value>(GetArenaForAllocation());
+    _impl_.result_ = p;
+  }
+  return _impl_.result_;
+}
+inline ::PROTOBUF_NAMESPACE_ID::Value* RpcResponse::mutable_result() {
+  ::PROTOBUF_NAMESPACE_ID::Value* _msg = _internal_mutable_result();
+  // @@protoc_insertion_point(field_mutable:msg.RpcResponse.result)
+  return _msg;
+}
+inline void RpcResponse::set_allocated_result(::PROTOBUF_NAMESPACE_ID::Value* result) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete reinterpret_cast< ::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.result_);
+  }
+  if (result) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(
+                reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(result));
+    if (message_arena != submessage_arena) {
+      result = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, result, submessage_arena);
+    }
+    _impl_._has_bits_[0] |= 0x00000001u;
+  } else {
+    _impl_._has_bits_[0] &= ~0x00000001u;
+  }
+  _impl_.result_ = result;
   // @@protoc_insertion_point(field_set_allocated:msg.RpcResponse.result)
 }
 

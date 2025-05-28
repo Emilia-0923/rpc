@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../abstract/BaseProtocol.hpp"
-#include "../../abstract/BaseClient.hpp"
+#include "../abstract/BaseProtocol.hpp"
+#include "../abstract/BaseClient.hpp"
 #include "../muduo/package/CountDownLatch.hpp"
 #include "../muduo/tcp_client/TcpClient.hpp"
 #include "../muduo/package/LoopThread.hpp"

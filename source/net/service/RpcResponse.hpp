@@ -19,25 +19,25 @@ namespace rpc
                 logging.error("RpcResponse 返回码为空或类型错误!");
                 return false;
             }
-            // 结果字段存在，并且结果类型为string
-            if (!result_field || result_field->cpp_type() != PBFieldDescriptor::CPPTYPE_STRING) {
+            // 结果字段存在，并且结果类型为 google::protobuf::Value
+            if (!result_field || result_field->message_type() != google::protobuf::Value::descriptor()) {
                 logging.error("RpcResponse 返回结果为空或类型错误!");
                 return false;
             }
             return true;
         }
 
-        std::string get_result() {
+        const google::protobuf::Value& get_result() {
             const PBDescriptor* descriptor = message->GetDescriptor();
             const PBFieldDescriptor* result_field = descriptor->FindFieldByName("result");
             const PBReflection* reflection = message->GetReflection();
-            return reflection->GetString(*message, result_field);
+            return reflection->GetMessage(*message, result_field);
         }
 
-        void set_result(const std::string& _result) {
+        void set_result(const google::protobuf::Value& _result) {
             const PBDescriptor* descriptor = message->GetDescriptor();
             const PBFieldDescriptor* result_field = descriptor->FindFieldByName("result");
-            message->GetReflection()->SetString(message.get(), result_field, _result);
+            message->GetReflection()->MutableMessage(message.get(), result_field)->CopyFrom(_result);
         }
     };
 }

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../muduo/package/Connection.hpp"
-#include "../../abstract/BaseProtocol.hpp"
-#include "../../abstract/BaseConnection.hpp"
+#include "../abstract/BaseProtocol.hpp"
+#include "../abstract/BaseConnection.hpp"
 
 namespace rpc {
     class MuduoConnection : public BaseConnection {

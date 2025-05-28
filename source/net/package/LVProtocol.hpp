@@ -1,8 +1,8 @@
 #pragma once
 
 #include <arpa/inet.h>
-#include "../../abstract/BaseProtocol.hpp"
-#include "../../abstract/BaseBuffer.hpp"
+#include "../abstract/BaseProtocol.hpp"
+#include "../abstract/BaseBuffer.hpp"
 #include "../factory/MessageFactory.hpp"
 
 // |Length|VALUE|

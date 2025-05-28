@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../abstract/BaseMessage.hpp"
+#include "../../abstract/BaseMessage.hpp"
 #include "../../pbmessage/RpcMessage.pb.h"
 #include "../../../util/Log.hpp"
 
@@ -9,6 +9,7 @@ namespace rpc
     using PBDescriptor = google::protobuf::Descriptor;
     using PBFieldDescriptor = google::protobuf::FieldDescriptor;
     using PBReflection = google::protobuf::Reflection;
+    using PBValue = google::protobuf::Value;
 
     class ProtoMessage : public BaseMessage
     {

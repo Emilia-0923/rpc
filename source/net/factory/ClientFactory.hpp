@@ -1,5 +1,5 @@
 #pragma once
-#include "../../abstract/BaseClient.hpp"
+#include "../abstract/BaseClient.hpp"
 #include "../package/MuduoClient.hpp"
 
 namespace rpc {

@@ -1,5 +1,5 @@
 #pragma once
-#include "../util/Fields.hpp"
+#include "../../common/Fields.hpp"
 #include <memory>
 
 namespace rpc

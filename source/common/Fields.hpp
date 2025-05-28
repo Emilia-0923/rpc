@@ -34,6 +34,7 @@ namespace rpc
         DISCONNECTED = 4, //连接断开
         NOT_FOUND_SERVICE = 5, //未找到服务
         NOT_FOUND_TOPIC = 6, //未找到主题
+        INTERNAL_ERROR = 7, //内部错误
     };
 
     static std::string err_reason(RetCode code) {
@@ -45,6 +46,7 @@ namespace rpc
             {RetCode::DISCONNECTED, "连接断开"},
             {RetCode::NOT_FOUND_SERVICE, "未找到服务"},
             {RetCode::NOT_FOUND_TOPIC, "未找到主题"},
+            {RetCode::INTERNAL_ERROR, "内部错误"},
         };
         auto it = err_map.find(code);
         if (it != err_map.end()) {
@@ -57,9 +59,8 @@ namespace rpc
 
     // RPC请求类型
     enum class RpcType {
-        SYNC = 0, //同步请求
-        ASYNC = 1, //异步请求
-        CALLBACK = 2, //回调请求
+        ASYNC = 0, //异步请求
+        CALLBACK = 1, //回调请求
     };
 
     enum class TopicOptype {

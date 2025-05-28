@@ -1,5 +1,6 @@
 // cpp
 syntax = "proto3";
+import "google/protobuf/struct.proto";
 package msg;
 
 
@@ -10,7 +11,8 @@ message Address {
 // RpcRequest:
 message RpcRequest {
     optional string method = 1;
-    repeated string params = 2;
+    // repeated string params = 2;
+    repeated google.protobuf.Value params = 2;
 }
 
 // TopicRequest:
@@ -38,7 +40,8 @@ message RpcResponse {
     // 返回码
     optional int32 retcode = 1;
     // 返回结果
-    optional string result = 2;
+    // optional string result = 2;
+    optional google.protobuf.Value result = 2;
 }
 
 // TopicResponse:

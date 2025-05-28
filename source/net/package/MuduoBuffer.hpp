@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../muduo/package/Buffer.hpp"
-#include "../../abstract/BaseBuffer.hpp"
+#include "../abstract/BaseBuffer.hpp"
 #include <cstring>
 #include <arpa/inet.h>
 

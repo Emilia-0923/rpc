@@ -87,7 +87,7 @@ PROTOBUF_CONSTEXPR RpcResponse::RpcResponse(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_._has_bits_)*/{}
   , /*decltype(_impl_._cached_size_)*/{}
-  , /*decltype(_impl_.result_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.result_)*/nullptr
   , /*decltype(_impl_.retcode_)*/0} {}
 struct RpcResponseDefaultTypeInternal {
   PROTOBUF_CONSTEXPR RpcResponseDefaultTypeInternal()
@@ -233,29 +233,34 @@ static const ::_pb::Message* const file_default_instances[] = {
 };
 
 const char descriptor_table_protodef_RpcMessage_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\020RpcMessage.proto\022\003msg\"=\n\007Address\022\017\n\002ip"
-  "\030\001 \001(\tH\000\210\001\001\022\021\n\004port\030\002 \001(\005H\001\210\001\001B\005\n\003_ipB\007\n"
-  "\005_port\"<\n\nRpcRequest\022\023\n\006method\030\001 \001(\tH\000\210\001"
-  "\001\022\016\n\006params\030\002 \003(\tB\t\n\007_method\"n\n\014TopicReq"
-  "uest\022\022\n\005topic\030\001 \001(\tH\000\210\001\001\022\023\n\006optype\030\002 \001(\005"
-  "H\001\210\001\001\022\024\n\007message\030\003 \001(\tH\002\210\001\001B\010\n\006_topicB\t\n"
-  "\007_optypeB\n\n\010_message\"\200\001\n\016ServiceRequest\022"
-  "\023\n\006method\030\001 \001(\tH\000\210\001\001\022\023\n\006optype\030\002 \001(\005H\001\210\001"
-  "\001\022\"\n\007address\030\003 \001(\0132\014.msg.AddressH\002\210\001\001B\t\n"
-  "\007_methodB\t\n\007_optypeB\n\n\010_address\"O\n\013RpcRe"
-  "sponse\022\024\n\007retcode\030\001 \001(\005H\000\210\001\001\022\023\n\006result\030\002"
-  " \001(\tH\001\210\001\001B\n\n\010_retcodeB\t\n\007_result\"1\n\rTopi"
-  "cResponse\022\024\n\007retcode\030\001 \001(\005H\000\210\001\001B\n\n\010_retc"
-  "ode\"\222\001\n\017ServiceResponse\022\024\n\007retcode\030\001 \001(\005"
-  "H\000\210\001\001\022\023\n\006method\030\002 \001(\tH\001\210\001\001\022\023\n\006optype\030\003 \001"
-  "(\005H\002\210\001\001\022\035\n\007address\030\004 \003(\0132\014.msg.AddressB\n"
-  "\n\010_retcodeB\t\n\007_methodB\t\n\007_optypeb\006proto3"
+  "\n\020RpcMessage.proto\022\003msg\032\034google/protobuf"
+  "/struct.proto\"=\n\007Address\022\017\n\002ip\030\001 \001(\tH\000\210\001"
+  "\001\022\021\n\004port\030\002 \001(\005H\001\210\001\001B\005\n\003_ipB\007\n\005_port\"T\n\n"
+  "RpcRequest\022\023\n\006method\030\001 \001(\tH\000\210\001\001\022&\n\006param"
+  "s\030\002 \003(\0132\026.google.protobuf.ValueB\t\n\007_meth"
+  "od\"n\n\014TopicRequest\022\022\n\005topic\030\001 \001(\tH\000\210\001\001\022\023"
+  "\n\006optype\030\002 \001(\005H\001\210\001\001\022\024\n\007message\030\003 \001(\tH\002\210\001"
+  "\001B\010\n\006_topicB\t\n\007_optypeB\n\n\010_message\"\200\001\n\016S"
+  "erviceRequest\022\023\n\006method\030\001 \001(\tH\000\210\001\001\022\023\n\006op"
+  "type\030\002 \001(\005H\001\210\001\001\022\"\n\007address\030\003 \001(\0132\014.msg.A"
+  "ddressH\002\210\001\001B\t\n\007_methodB\t\n\007_optypeB\n\n\010_ad"
+  "dress\"g\n\013RpcResponse\022\024\n\007retcode\030\001 \001(\005H\000\210"
+  "\001\001\022+\n\006result\030\002 \001(\0132\026.google.protobuf.Val"
+  "ueH\001\210\001\001B\n\n\010_retcodeB\t\n\007_result\"1\n\rTopicR"
+  "esponse\022\024\n\007retcode\030\001 \001(\005H\000\210\001\001B\n\n\010_retcod"
+  "e\"\222\001\n\017ServiceResponse\022\024\n\007retcode\030\001 \001(\005H\000"
+  "\210\001\001\022\023\n\006method\030\002 \001(\tH\001\210\001\001\022\023\n\006optype\030\003 \001(\005"
+  "H\002\210\001\001\022\035\n\007address\030\004 \003(\0132\014.msg.AddressB\n\n\010"
+  "_retcodeB\t\n\007_methodB\t\n\007_optypeb\006proto3"
   ;
+static const ::_pbi::DescriptorTable* const descriptor_table_RpcMessage_2eproto_deps[1] = {
+  &::descriptor_table_google_2fprotobuf_2fstruct_2eproto,
+};
 static ::_pbi::once_flag descriptor_table_RpcMessage_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_RpcMessage_2eproto = {
-    false, false, 680, descriptor_table_protodef_RpcMessage_2eproto,
+    false, false, 758, descriptor_table_protodef_RpcMessage_2eproto,
     "RpcMessage.proto",
-    &descriptor_table_RpcMessage_2eproto_once, nullptr, 0, 7,
+    &descriptor_table_RpcMessage_2eproto_once, descriptor_table_RpcMessage_2eproto_deps, 1, 7,
     schemas, file_default_instances, TableStruct_RpcMessage_2eproto::offsets,
     file_level_metadata_RpcMessage_2eproto, file_level_enum_descriptors_RpcMessage_2eproto,
     file_level_service_descriptors_RpcMessage_2eproto,
@@ -532,6 +537,9 @@ class RpcRequest::_Internal {
   }
 };
 
+void RpcRequest::clear_params() {
+  _impl_.params_.Clear();
+}
 RpcRequest::RpcRequest(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
@@ -626,16 +634,14 @@ const char* RpcRequest::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
         } else
           goto handle_unusual;
         continue;
-      // repeated string params = 2;
+      // repeated .google.protobuf.Value params = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
           ptr -= 1;
           do {
             ptr += 1;
-            auto str = _internal_add_params();
-            ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+            ptr = ctx->ParseMessage(_internal_add_params(), ptr);
             CHK_(ptr);
-            CHK_(::_pbi::VerifyUTF8(str, "msg.RpcRequest.params"));
             if (!ctx->DataAvailable(ptr)) break;
           } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<18>(ptr));
         } else
@@ -681,14 +687,12 @@ uint8_t* RpcRequest::_InternalSerialize(
         1, this->_internal_method(), target);
   }
 
-  // repeated string params = 2;
-  for (int i = 0, n = this->_internal_params_size(); i < n; i++) {
-    const auto& s = this->_internal_params(i);
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      s.data(), static_cast<int>(s.length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "msg.RpcRequest.params");
-    target = stream->WriteString(2, s, target);
+  // repeated .google.protobuf.Value params = 2;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_params_size()); i < n; i++) {
+    const auto& repfield = this->_internal_params(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(2, repfield, repfield.GetCachedSize(), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -707,12 +711,11 @@ size_t RpcRequest::ByteSizeLong() const {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // repeated string params = 2;
-  total_size += 1 *
-      ::PROTOBUF_NAMESPACE_ID::internal::FromIntSize(_impl_.params_.size());
-  for (int i = 0, n = _impl_.params_.size(); i < n; i++) {
-    total_size += ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-      _impl_.params_.Get(i));
+  // repeated .google.protobuf.Value params = 2;
+  total_size += 1UL * this->_internal_params_size();
+  for (const auto& msg : this->_impl_.params_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
   }
 
   // optional string method = 1;
@@ -1402,11 +1405,20 @@ class RpcResponse::_Internal {
   static void set_has_retcode(HasBits* has_bits) {
     (*has_bits)[0] |= 2u;
   }
+  static const ::PROTOBUF_NAMESPACE_ID::Value& result(const RpcResponse* msg);
   static void set_has_result(HasBits* has_bits) {
     (*has_bits)[0] |= 1u;
   }
 };
 
+const ::PROTOBUF_NAMESPACE_ID::Value&
+RpcResponse::_Internal::result(const RpcResponse* msg) {
+  return *msg->_impl_.result_;
+}
+void RpcResponse::clear_result() {
+  if (_impl_.result_ != nullptr) _impl_.result_->Clear();
+  _impl_._has_bits_[0] &= ~0x00000001u;
+}
 RpcResponse::RpcResponse(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
@@ -1419,17 +1431,12 @@ RpcResponse::RpcResponse(const RpcResponse& from)
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){from._impl_._has_bits_}
     , /*decltype(_impl_._cached_size_)*/{}
-    , decltype(_impl_.result_){}
+    , decltype(_impl_.result_){nullptr}
     , decltype(_impl_.retcode_){}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
-  _impl_.result_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.result_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
   if (from._internal_has_result()) {
-    _this->_impl_.result_.Set(from._internal_result(), 
-      _this->GetArenaForAllocation());
+    _this->_impl_.result_ = new ::PROTOBUF_NAMESPACE_ID::Value(*from._impl_.result_);
   }
   _this->_impl_.retcode_ = from._impl_.retcode_;
   // @@protoc_insertion_point(copy_constructor:msg.RpcResponse)
@@ -1442,13 +1449,9 @@ inline void RpcResponse::SharedCtor(
   new (&_impl_) Impl_{
       decltype(_impl_._has_bits_){}
     , /*decltype(_impl_._cached_size_)*/{}
-    , decltype(_impl_.result_){}
+    , decltype(_impl_.result_){nullptr}
     , decltype(_impl_.retcode_){0}
   };
-  _impl_.result_.InitDefault();
-  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-    _impl_.result_.Set("", GetArenaForAllocation());
-  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
 }
 
 RpcResponse::~RpcResponse() {
@@ -1462,7 +1465,7 @@ RpcResponse::~RpcResponse() {
 
 inline void RpcResponse::SharedDtor() {
   GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
-  _impl_.result_.Destroy();
+  if (this != internal_default_instance()) delete _impl_.result_;
 }
 
 void RpcResponse::SetCachedSize(int size) const {
@@ -1477,7 +1480,8 @@ void RpcResponse::Clear() {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000001u) {
-    _impl_.result_.ClearNonDefaultToEmpty();
+    GOOGLE_DCHECK(_impl_.result_ != nullptr);
+    _impl_.result_->Clear();
   }
   _impl_.retcode_ = 0;
   _impl_._has_bits_.Clear();
@@ -1500,13 +1504,11 @@ const char* RpcResponse::_InternalParse(const char* ptr, ::_pbi::ParseContext* c
         } else
           goto handle_unusual;
         continue;
-      // optional string result = 2;
+      // optional .google.protobuf.Value result = 2;
       case 2:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
-          auto str = _internal_mutable_result();
-          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          ptr = ctx->ParseMessage(_internal_mutable_result(), ptr);
           CHK_(ptr);
-          CHK_(::_pbi::VerifyUTF8(str, "msg.RpcResponse.result"));
         } else
           goto handle_unusual;
         continue;
@@ -1546,14 +1548,11 @@ uint8_t* RpcResponse::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteInt32ToArray(1, this->_internal_retcode(), target);
   }
 
-  // optional string result = 2;
+  // optional .google.protobuf.Value result = 2;
   if (_internal_has_result()) {
-    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
-      this->_internal_result().data(), static_cast<int>(this->_internal_result().length()),
-      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
-      "msg.RpcResponse.result");
-    target = stream->WriteStringMaybeAliased(
-        2, this->_internal_result(), target);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+      InternalWriteMessage(2, _Internal::result(this),
+        _Internal::result(this).GetCachedSize(), target, stream);
   }
 
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
@@ -1574,11 +1573,11 @@ size_t RpcResponse::ByteSizeLong() const {
 
   cached_has_bits = _impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
-    // optional string result = 2;
+    // optional .google.protobuf.Value result = 2;
     if (cached_has_bits & 0x00000001u) {
       total_size += 1 +
-        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
-          this->_internal_result());
+        ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(
+          *_impl_.result_);
     }
 
     // optional int32 retcode = 1;
@@ -1608,7 +1607,8 @@ void RpcResponse::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PR
   cached_has_bits = from._impl_._has_bits_[0];
   if (cached_has_bits & 0x00000003u) {
     if (cached_has_bits & 0x00000001u) {
-      _this->_internal_set_result(from._internal_result());
+      _this->_internal_mutable_result()->::PROTOBUF_NAMESPACE_ID::Value::MergeFrom(
+          from._internal_result());
     }
     if (cached_has_bits & 0x00000002u) {
       _this->_impl_.retcode_ = from._impl_.retcode_;
@@ -1631,15 +1631,14 @@ bool RpcResponse::IsInitialized() const {
 
 void RpcResponse::InternalSwap(RpcResponse* other) {
   using std::swap;
-  auto* lhs_arena = GetArenaForAllocation();
-  auto* rhs_arena = other->GetArenaForAllocation();
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   swap(_impl_._has_bits_[0], other->_impl_._has_bits_[0]);
-  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
-      &_impl_.result_, lhs_arena,
-      &other->_impl_.result_, rhs_arena
-  );
-  swap(_impl_.retcode_, other->_impl_.retcode_);
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(RpcResponse, _impl_.retcode_)
+      + sizeof(RpcResponse::_impl_.retcode_)
+      - PROTOBUF_FIELD_OFFSET(RpcResponse, _impl_.result_)>(
+          reinterpret_cast<char*>(&_impl_.result_),
+          reinterpret_cast<char*>(&other->_impl_.result_));
 }
 
 ::PROTOBUF_NAMESPACE_ID::Metadata RpcResponse::GetMetadata() const {
