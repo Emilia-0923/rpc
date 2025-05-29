@@ -101,7 +101,7 @@ namespace rpc {
             }
 
             ServiceDiscribe::ptr create() {
-                return std::make_shared<ServiceDiscribe>(method_name, std::move(params_desc), return_type, std::move(callback));
+                return std::make_shared<ServiceDiscribe>(std::move(method_name), std::move(params_desc), std::move(return_type), std::move(callback));
             }
         private:
             std::string method_name;

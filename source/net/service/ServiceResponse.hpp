@@ -7,7 +7,6 @@ namespace rpc
     {
     public:
         using ptr = std::shared_ptr<ServiceResponse>;
-        using Address = std::pair<std::string, uint16_t>;
 
         ServiceResponse() : ProtoResponse(new msg::ServiceResponse()) {}
 

@@ -61,8 +61,9 @@ namespace rpc {
                 RequestDescribe::ptr desc = new_describe(_req, RpcType::ASYNC);
                 if (!desc) {
                     logging.error("Requestor::send 创建请求描述失败");
-                    return;
+                    return false;
                 }
+                _conn->send(_req);
                 _async_rsp = desc->response.get_future();
                 return true;
             }
@@ -71,8 +72,9 @@ namespace rpc {
                 RequestDescribe::ptr desc = new_describe(_req, RpcType::CALLBACK, _cb);
                 if (!desc) {
                     logging.error("Requestor::send 创建请求描述失败");
-                    return;
+                    return false;
                 }
+                _conn->send(_req);
                 return true;
             }
         private:

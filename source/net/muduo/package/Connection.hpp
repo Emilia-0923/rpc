@@ -45,7 +45,8 @@ namespace muduo
 
         bool inactive_release; //是否启用非活跃销毁
         Status status; //连接状态
-        Socket socket; //套接字操作
+        // Socket socket; //套接字操作
+        std::unique_ptr<Socket> socket; //套接字操作
         Channel conn_channel; //关联的Channel
         EventLoop* loop; //连接事件管理
         Buffer in_buffer; //输入缓冲区
@@ -66,7 +67,7 @@ namespace muduo
         void handler_read() {
             //接收socket的数据，放到缓冲区
             char buf[buffer_size];
-            int ret = socket.non_block_recv(buf, buffer_size - 1);
+            int ret = socket->non_block_recv(buf, buffer_size - 1);
             if(ret < 0){
                 shutdown();
                 return;
@@ -80,7 +81,7 @@ namespace muduo
 
         //设置到连接的channel中的写回调, 此时描述符应可写
         void handler_write() {
-            ssize_t ret = socket.non_block_send(out_buffer.get_read_idx(), out_buffer.read_able_size());
+            ssize_t ret = socket->non_block_send(out_buffer.get_read_idx(), out_buffer.read_able_size());
             if (ret < 0) {
                 if (in_buffer.read_able_size() > 0) {
                     msg_cb(shared_from_this(), &in_buffer);
@@ -140,17 +141,15 @@ namespace muduo
 
         //释放接口
         void release_in_loop() {
-            if (status == DISCONNECTED) {
+            if (status != DISCONNECTING) {
                 logging.warning("连接已经被释放，跳过重复释放操作");
                 return;
             }
             status = DISCONNECTED;
-            //先取消事件关心
+            //取消事件关心
             conn_channel.disable_all();
             //移除连接的事件监控
             conn_channel.remove();
-            //关闭描述符
-            socket.remove();
             //取消定时销毁任务
             if(loop->has_timer(id)) {
                 disable_inactive_release_in_loop();
@@ -178,6 +177,10 @@ namespace muduo
 
         //loop中先将数据处理完毕, 再将连接关闭
         void shutdown_in_loop() {
+            if (status != CONNECTED) {
+                logging.warning("连接已经被释放，跳过重复释放操作");
+                return;
+            }
             status = DISCONNECTING;
             if (in_buffer.read_able_size() > 0) {
                 if (msg_cb) {
@@ -190,7 +193,17 @@ namespace muduo
                 }
             }
             if (out_buffer.read_able_size() == 0) {
-                release();
+                release_in_loop();
+            }
+        }
+
+        void disconnect_in_loop() {
+            if (status == DISCONNECTED) {
+                logging.warning("连接已经被释放，跳过重复释放操作");
+                return;
+            }
+            if (!conn_channel.write_able()) {
+                ::shutdown(info.fd, SHUT_WR);
             }
         }
 
@@ -220,7 +233,7 @@ namespace muduo
         }
     public:
         Connection(EventLoop* _loop, uint64_t _id, const Connection::Info& _info)
-            : info(_info), loop(_loop), id(_id), inactive_release(false), status(CONNECTING), socket(info.fd, Socket::IPV4_TCP), conn_channel(info.fd, _loop) {
+            : info(_info), loop(_loop), id(_id), inactive_release(false), status(CONNECTING), socket(new Socket(info.fd, Socket::IPV4_TCP)), conn_channel(info.fd, _loop) {
             conn_channel.set_close_cb(std::bind(&Connection::handler_close, this));
             conn_channel.set_event_cb(std::bind(&Connection::handler_event, this));
             conn_channel.set_read_cb(std::bind(&Connection::handler_read, this));
@@ -305,6 +318,10 @@ namespace muduo
         //关闭连接
         void shutdown() {
             loop->run_in_loop(std::bind(&Connection::shutdown_in_loop, this));
+        }
+
+        void disconnect() {
+            loop->run_in_loop(std::bind(&Connection::disconnect_in_loop, this));
         }
 
         //释放

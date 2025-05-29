@@ -63,9 +63,10 @@ namespace muduo {
         void stop() {
             is_connect = false;
             loop->push_task(std::bind(&Connector::stop_in_loop, shared_from_this()));
-            if(loop->has_timer(timer_id)) {
-                loop->timer_cancel(timer_id);
-            }
+        }
+
+        void reset_channel_in_loop() {
+            channel.reset();
         }
 
     private:
@@ -90,8 +91,7 @@ namespace muduo {
             loop->assert_in_loop();
             if (state == CONNECTING) {
                 state = DISCONNECTED;
-                int socket_fd = remove_and_reset_channel();
-                retry(socket_fd);
+                int socket_fd = reset_channel();
             }
         }
 
@@ -138,7 +138,9 @@ namespace muduo {
                 logging.fatal("Connector::handle_writes 状态错误: %d", state);
                 abort();
             }
-            int socket_fd = remove_and_reset_channel();
+            channel->disable_all();
+            channel->remove();
+            int socket_fd = reset_channel();
             int err = 0;
             socklen_t len = sizeof(err);
             if (::getsockopt(socket_fd, SOL_SOCKET, SO_ERROR, &err, &len) < 0) {
@@ -165,7 +167,7 @@ namespace muduo {
 
         void handle_error() {
             if(state == CONNECTING) {
-                int socket_fd = remove_and_reset_channel();
+                int socket_fd = reset_channel();
                 int err = 0;
                 socklen_t len = sizeof(err);
                 if (::getsockopt(socket_fd, SOL_SOCKET, SO_ERROR, &err, &len) < 0) {
@@ -197,15 +199,9 @@ namespace muduo {
             }
         }
 
-        void reset_channel() {
-            channel.reset();
-        }
-
-        int remove_and_reset_channel() {
-            channel->disable_all();
-            channel->remove();
+        int reset_channel() {
             int socket_fd = channel->get_fd();
-            loop->push_task(std::bind(&Connector::reset_channel, shared_from_this()));
+            loop->push_task(std::bind(&Connector::reset_channel_in_loop, shared_from_this()));
             return socket_fd;
         }
     };

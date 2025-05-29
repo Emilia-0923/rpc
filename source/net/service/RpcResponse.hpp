@@ -27,14 +27,15 @@ namespace rpc
             return true;
         }
 
-        const google::protobuf::Value& get_result() {
+        const PBValue& get_result() {
             const PBDescriptor* descriptor = message->GetDescriptor();
             const PBFieldDescriptor* result_field = descriptor->FindFieldByName("result");
             const PBReflection* reflection = message->GetReflection();
-            return reflection->GetMessage(*message, result_field);
+            const auto& msg = message->GetReflection()->GetMessage(*message, result_field);
+            return dynamic_cast<const google::protobuf::Value&>(msg);
         }
 
-        void set_result(const google::protobuf::Value& _result) {
+        void set_result(const PBValue _result) {
             const PBDescriptor* descriptor = message->GetDescriptor();
             const PBFieldDescriptor* result_field = descriptor->FindFieldByName("result");
             message->GetReflection()->MutableMessage(message.get(), result_field)->CopyFrom(_result);

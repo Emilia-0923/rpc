@@ -1,6 +1,9 @@
 #pragma once
 #include "../../abstract/BaseMessage.hpp"
 #include "../../pbmessage/RpcMessage.pb.h"
+#include <google/protobuf/any.pb.h>
+#include <google/protobuf/message.h>
+#include <google/protobuf/util/json_util.h>
 #include "../../../util/Log.hpp"
 
 namespace rpc
@@ -10,6 +13,8 @@ namespace rpc
     using PBFieldDescriptor = google::protobuf::FieldDescriptor;
     using PBReflection = google::protobuf::Reflection;
     using PBValue = google::protobuf::Value;
+
+    using Address = std::pair<std::string, int>;
 
     class ProtoMessage : public BaseMessage
     {

@@ -50,31 +50,32 @@ namespace muduo
         void update(Channel* _channel) {
             bool ret = has_channel(_channel);
             int fd = _channel->get_fd();
+            if (fcntl(fd, F_GETFD) == -1) {
+                logging.warning("fd: %d 已经被关闭，跳过 epoll 移除操作", fd);
+                return;
+            }
             epoll_event event;
             event.data.fd = fd;
             event.events = _channel->get_event();
 
-            int n = 0;
             if (ret == false) {
                 int n = epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &event);
                 if (n == 0) {
                     channels.emplace(fd, _channel);
                 }
-                else {
-                    logging.error("Epoller::update 添加错误: %s", strerror(errno));
-                }
             }
             else {
                 int n = epoll_ctl(epoll_fd, EPOLL_CTL_MOD, fd, &event);
-                if (n != 0) {
-                    logging.error("Epoller::update 修改错误: %s", strerror(errno));
-                }
             }
         }
 
         //移除channel
         void remove(Channel* _channel) {
             int fd = _channel->get_fd();
+            if (fcntl(fd, F_GETFD) == -1) {
+                logging.warning("fd: %d 已经被关闭，跳过 epoll 移除操作", fd);
+                return;
+            }
             auto it = channels.find(fd);
             if (it != channels.end()) {
                 channels.erase(it);
@@ -82,11 +83,7 @@ namespace muduo
             struct epoll_event event;
             event.data.fd = fd;
             event.events = _channel->get_event();
-            
             int n = epoll_ctl(epoll_fd, EPOLL_CTL_DEL, fd, &event);
-            if (n < 0) {
-                logging.error("Epoller::remove 删除错误: %s", strerror(errno));
-            }
         }
 
         //开始检测IO事件

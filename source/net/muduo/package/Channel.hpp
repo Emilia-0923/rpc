@@ -34,6 +34,10 @@ namespace muduo
             : fd(_fd), loop(_loop), event(0), revent(0) {
         }
 
+        ~Channel() {
+            logging.debug("Channel::~Channel()");
+        }
+
         void remove();
 
         int get_fd() {

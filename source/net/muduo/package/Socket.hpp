@@ -11,24 +11,18 @@ namespace muduo
     class Socket
     {
     public:
-
-        enum Error
-        {
+        enum Error {
             SocketErr = 1,
             BindErr = 2,
             ListenErr = 3,
         };
 
-        enum Protocol
-        {
+        enum Protocol {
             IPV4_TCP,
             IPV6_TCP,
         };
-
     private:
-
-        struct SocketType
-        {
+        struct SocketType {
             int domain;
             int type;
             int protocol;
@@ -47,7 +41,6 @@ namespace muduo
         int socket_fd;
 
         const int back_loging = 10;
-
     public:
 
         //domain(AF_INET/AF_INET6), type(SOCK_STREAM(TCP)/SOCK_DGRAM(UDP)), 0
@@ -72,6 +65,7 @@ namespace muduo
         }
 
         ~Socket() {
+            logging.debug("Socket::~Socket()");
             remove();
         }
         

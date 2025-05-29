@@ -40,33 +40,33 @@ namespace rpc
         }
 
         std::vector<PBValue> get_params() {
-            const PBDescriptor* descriptor = message->GetDescriptor();
-            const PBFieldDescriptor* params_field = descriptor->FindFieldByName(key::params);
-            const PBReflection* reflection = message->GetReflection();
+            const auto* descriptor = message->GetDescriptor();
+            const auto* params_field = descriptor->FindFieldByName(key::params);
+            const auto* reflection = message->GetReflection();
 
             std::vector<PBValue> params_vec;
             int field_size = reflection->FieldSize(*message, params_field);
+            params_vec.reserve(field_size); 
 
             for (int i = 0; i < field_size; ++i) {
-                PBValue value;
-                const auto& val = reflection->GetRepeatedMessage(*message, params_field, i);
-                val.UnpackTo(&value);
-                params_vec.push_back(value);
+                const auto& val = dynamic_cast<const PBValue&>(reflection->GetRepeatedMessage(*message, params_field, i));
+                params_vec.push_back(val);
             }
 
             return params_vec;
         }
 
-        void RpcRequest::set_params(const std::vector<PBValue>& _params) {
-            const PBDescriptor* descriptor = message->GetDescriptor();
-            const PBFieldDescriptor* params_field = descriptor->FindFieldByName(key::params);
-            const PBReflection* reflection = message->GetReflection();
+        void set_params(const std::vector<PBValue>& _params) {
+            const auto* descriptor = message->GetDescriptor();
+            const auto* params_field = descriptor->FindFieldByName(key::params);
+            const auto* reflection = message->GetReflection();
 
             reflection->ClearField(message.get(), params_field);
 
             for (const auto& value : _params) {
-                PBMessage* msg = reflection->AddMessage(message.get(), params_field);
-                msg->CopyFrom(value);
+                // 直接添加并复制 Value
+                auto* msg = reflection->AddMessage(message.get(), params_field);
+                msg->CopyFrom(value);  // Value 是 Message 的子类，可直接 CopyFrom
             }
         }
     };
