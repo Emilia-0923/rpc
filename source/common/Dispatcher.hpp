@@ -26,6 +26,7 @@ namespace rpc {
         MessageCallBack handler;
     };
 
+    // 用于分发消息的调度器
     class Dispatcher {
     private:
         std::mutex mtx;

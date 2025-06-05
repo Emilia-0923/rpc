@@ -4,6 +4,7 @@
 
 namespace rpc {
     namespace client {
+        // RPC服务提供者
         class Provider {
         public:
             using ptr = std::shared_ptr<Provider>;
@@ -74,12 +75,14 @@ namespace rpc {
             std::vector<Address> hosts;
         };
 
+        // RPC服务发现者
         class Discoverer {
         public:
             using ptr = std::shared_ptr<Discoverer>;
             using OfflineCallback = std::function<void(const Address&)>;
 
-            Discoverer(const Requestor::ptr& _requestor) : requestor(_requestor) {}
+            Discoverer(const Requestor::ptr& _requestor, const OfflineCallback& _offline_callback)
+                : requestor(_requestor), offline_callback(_offline_callback) {}
 
             // 服务发现
             bool service_discovery(const BaseConnection::ptr& _connection, const std::string& _method, Address& _host) {

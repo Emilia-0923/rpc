@@ -16,6 +16,7 @@ namespace rpc {
         using ServiceCallBack = std::function<void(const std::vector<PBValue>&, PBValue&)>;
         using ParamsDescribe = std::pair<std::string, ValueType>;
 
+        // 服务描述类
         class ServiceDiscribe {
         public:
             using ptr = std::shared_ptr<ServiceDiscribe>;
@@ -82,6 +83,7 @@ namespace rpc {
             ServiceCallBack callback; 
         };
 
+        // 服务描述工厂类
         class ServiceDescribeFactory {
         public:
             void set_method_name(const std::string& _method_name) {
@@ -110,6 +112,7 @@ namespace rpc {
             ValueType return_type;
         };
 
+        // 服务管理器类
         class ServiceManager {
         public:
             using ptr = std::shared_ptr<ServiceManager>;
@@ -138,6 +141,7 @@ namespace rpc {
             std::unordered_map<std::string, ServiceDiscribe::ptr> services;
         };
 
+        // RPC路由器类, 负责处理RPC请求和响应
         class RpcRouter {
         public:
             using ptr = std::shared_ptr<RpcRouter>;

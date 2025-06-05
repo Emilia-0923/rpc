@@ -5,6 +5,7 @@
 
 namespace rpc {
     namespace client {
+        // RPC请求者
         class Requestor {
         public:
             using ptr = std::shared_ptr<Requestor>;

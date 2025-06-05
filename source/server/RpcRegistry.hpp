@@ -5,6 +5,7 @@
 
 namespace rpc {
     namespace server {
+        // RPC服务注册中心
         class ProviderManager {
         public:
             using ptr = std::shared_ptr<ProviderManager>;
@@ -83,6 +84,7 @@ namespace rpc {
             std::unordered_map<BaseConnection::ptr, Provider::ptr> connection_provider;
         };
 
+        // RPC服务发现中心
         class DiscovererManager {
         public:
             using ptr = std::shared_ptr<DiscovererManager>;
@@ -165,6 +167,8 @@ namespace rpc {
             std::unordered_map<BaseConnection::ptr, Discoverer::ptr> connection_discoverer;
         };
 
+        // RPC服务注册中心管理器
+        // 负责处理服务注册、发现和下线等操作
         class PDManager {
         public:
             using ptr = std::shared_ptr<PDManager>;

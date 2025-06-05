@@ -4,6 +4,7 @@
 
 namespace rpc {
     namespace client {
+        // RPC调用者
         class RpcCaller {
         public:
             using ptr = std::shared_ptr<RpcCaller>;
@@ -14,7 +15,7 @@ namespace rpc {
             : requestor(_requestor) {}
 
             // 同步调用
-            bool call(const BaseConnection::ptr& _conn, const std::string& _method, const std::vector<PBValue>& _params, PBValue& _result) {
+            bool sync_call(const BaseConnection::ptr& _conn, const std::string& _method, const std::vector<PBValue>& _params, PBValue& _result) {
                 // 组织请求数据
                 RpcRequest::ptr req = MessageFactory::create<RpcRequest>();
                 req->set_id(UUID::ramdom());
@@ -44,7 +45,7 @@ namespace rpc {
             }
 
             //异步调用
-            bool call(const BaseConnection::ptr& _conn, const std::string& _method, const std::vector<PBValue>& _params, PBAsyncResponse& _result) {
+            bool async_call(const BaseConnection::ptr& _conn, const std::string& _method, const std::vector<PBValue>& _params, PBAsyncResponse& _result) {
                 RpcRequest::ptr req = MessageFactory::create<RpcRequest>();
                 req->set_id(UUID::ramdom());
                 req->set_type(MsgType::REQ_RPC);
@@ -63,7 +64,7 @@ namespace rpc {
             } 
 
             // 回调
-            bool call(const BaseConnection::ptr& _conn, const std::string& _method, const std::vector<PBValue>& _params, const PBResponseCallback& _cb) {
+            bool callback_call(const BaseConnection::ptr& _conn, const std::string& _method, const std::vector<PBValue>& _params, const PBResponseCallback& _cb) {
                 // 组织请求数据
                 RpcRequest::ptr req = MessageFactory::create<RpcRequest>();
                 req->set_id(UUID::ramdom());
