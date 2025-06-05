@@ -35,6 +35,7 @@ namespace rpc
         NOT_FOUND_SERVICE = 5, //未找到服务
         NOT_FOUND_TOPIC = 6, //未找到主题
         INTERNAL_ERROR = 7, //内部错误
+        INVALID_OPTYPE = 8, //无效操作类型
     };
 
     static std::string err_reason(RetCode code) {
@@ -47,6 +48,7 @@ namespace rpc
             {RetCode::NOT_FOUND_SERVICE, "未找到服务"},
             {RetCode::NOT_FOUND_TOPIC, "未找到主题"},
             {RetCode::INTERNAL_ERROR, "内部错误"},
+            {RetCode::INVALID_OPTYPE, "无效操作类型"},
         };
         auto it = err_map.find(code);
         if (it != err_map.end()) {
@@ -76,5 +78,6 @@ namespace rpc
         DISCOVERY = 1, //发现服务
         ONLINE = 2, //上线服务
         OFFLINE = 3, //下线服务
+        SERVICE_UNKNOW, //未知服务
     };
 }

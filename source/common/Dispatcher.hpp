@@ -31,8 +31,8 @@ namespace rpc {
         std::mutex mtx;
         std::unordered_map<MsgType, BaseCallBack::ptr> handlers;
 
-        using ptr = std::shared_ptr<Dispatcher>;
     public:
+        using ptr = std::shared_ptr<Dispatcher>;
         template<typename PBMessage>
         void register_handler(MsgType type, const typename CallBack<PBMessage>::MessageCallBack& handler) {
             std::lock_guard<std::mutex> lock(mtx);

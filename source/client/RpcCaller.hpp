@@ -17,7 +17,7 @@ namespace rpc {
             bool call(const BaseConnection::ptr& _conn, const std::string& _method, const std::vector<PBValue>& _params, PBValue& _result) {
                 // 组织请求数据
                 RpcRequest::ptr req = MessageFactory::create<RpcRequest>();
-                req->set_id(UUID::uuid());
+                req->set_id(UUID::ramdom());
                 req->set_type(MsgType::REQ_RPC);
                 req->set_method(_method);
                 req->set_params(_params);
@@ -46,7 +46,7 @@ namespace rpc {
             //异步调用
             bool call(const BaseConnection::ptr& _conn, const std::string& _method, const std::vector<PBValue>& _params, PBAsyncResponse& _result) {
                 RpcRequest::ptr req = MessageFactory::create<RpcRequest>();
-                req->set_id(UUID::uuid());
+                req->set_id(UUID::ramdom());
                 req->set_type(MsgType::REQ_RPC);
                 req->set_method(_method);
                 req->set_params(_params);
@@ -66,7 +66,7 @@ namespace rpc {
             bool call(const BaseConnection::ptr& _conn, const std::string& _method, const std::vector<PBValue>& _params, const PBResponseCallback& _cb) {
                 // 组织请求数据
                 RpcRequest::ptr req = MessageFactory::create<RpcRequest>();
-                req->set_id(UUID::uuid());
+                req->set_id(UUID::ramdom());
                 req->set_type(MsgType::REQ_RPC);
                 req->set_method(_method);
                 req->set_params(_params);

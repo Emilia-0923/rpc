@@ -6,7 +6,7 @@
 
 class UUID {
 public:
-     static std::string uuid() {
+     static std::string ramdom() {
         std::stringstream ss;
         // 构造一个随机数生成器
         std::random_device rd;
