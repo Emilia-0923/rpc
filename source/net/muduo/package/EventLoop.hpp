@@ -28,7 +28,7 @@ namespace muduo
                 logging.fatal("EventLoop::create_event_fd event_fd 创建错误!");
                 abort();
             }
-            logging.info("EventFd 创建成功, event_fd: %d!", efd);
+            // logging.info("EventFd 创建成功, event_fd: %d!", efd);
             return efd;
         }
 
@@ -164,7 +164,7 @@ namespace muduo
 
     //在eventloop中删除Channel
     void Channel::remove() {
-        logging.debug("尝试在 eventloop 中删除 fd: %d!", fd);
+        // logging.debug("尝试在 eventloop 中删除 fd: %d!", fd);
         loop->epoll_remove(this);
     }
 

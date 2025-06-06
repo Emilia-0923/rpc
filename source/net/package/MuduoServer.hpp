@@ -48,7 +48,7 @@ namespace rpc {
             auto base_buffer = BufferFactory::create(buf);
             while(true) {
                 if(!protocol->can_process(base_buffer)) {
-                    logging.info("数据包不完整，等待数据包继续接收!"); 
+                    // logging.info("数据包不完整，等待数据包继续接收!"); 
                     if(base_buffer->read_able_size() > max_data_length) {
                         logging.info("数据包过大，关闭连接!"); 
                         conn->shutdown();
@@ -79,7 +79,7 @@ namespace rpc {
     public:
         using ptr = std::shared_ptr<MuduoServer>;
 
-        MuduoServer(int port, const std::string& ip = "0.0.0.0")
+        MuduoServer(int port, const std::string& ip)
         : server(port, ip)
         , protocol(ProtocolFactory::create()) {}
 

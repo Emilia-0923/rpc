@@ -13,6 +13,7 @@ namespace rpc {
             struct Provider {
                 using ptr = std::shared_ptr<Provider>;
 
+                std::mutex mtx;
                 BaseConnection::ptr connection;
                 Address host;
                 std::vector<std::string> methods;
@@ -21,6 +22,7 @@ namespace rpc {
                     : connection(_connection), host(_host) {}
 
                 void append_method(const std::string& _method) {
+                    std::lock_guard<std::mutex> lock(mtx);
                     methods.push_back(_method);
                 }
             };
@@ -31,7 +33,7 @@ namespace rpc {
                 {
                     std::lock_guard<std::mutex> lock(mtx);
                     auto it = connection_provider.find(_connection);
-                    if (it == connection_provider.end()) {
+                    if (it != connection_provider.end()) {
                         provider = it->second;
                     }
                     else {
@@ -173,19 +175,20 @@ namespace rpc {
         public:
             using ptr = std::shared_ptr<PDManager>;
 
-            PDManager() {
-                provider_manager = std::make_shared<ProviderManager>();
-                discoverer_manager = std::make_shared<DiscovererManager>();
-            }
+            PDManager()
+                : provider_manager(std::make_shared<ProviderManager>()), discoverer_manager(std::make_shared<DiscovererManager>())
+            {}
 
             void on_service_request(const BaseConnection::ptr _connection, const ServiceRequest::ptr _req) {
                 ServiceOptype optype = _req->get_optype();
                 if (optype == ServiceOptype::REGISTRY) {
+                    logging.debug("PDManager::on_service_request: %s:%d 服务注册请求, method: %s", _req->get_address().first.c_str(), _req->get_address().second, _req->get_method().c_str());
                     provider_manager->add_provider(_connection, _req->get_address(), _req->get_method());
                     discoverer_manager->online_notify(_req->get_method(), _req->get_address());
                     registry_response(_connection, _req);
                 }
                 else if (optype == ServiceOptype::DISCOVERY) {
+                    logging.debug("PDManager::on_service_request: %s:%d 服务发现请求, method: %s", _req->get_address().first.c_str(), _req->get_address().second, _req->get_method().c_str());
                     discoverer_manager->add_discoverer(_connection, _req->get_method());
                     discovery_response(_connection, _req);
                 }
@@ -221,6 +224,11 @@ namespace rpc {
                 msg_rsp->set_type(MsgType::RSP_SERVICE);
                 msg_rsp->set_optype(ServiceOptype::DISCOVERY);
                 std::vector<Address> hosts = provider_manager->get_method_hosts(_req->get_method());
+                if(hosts.empty()) {
+                    msg_rsp->set_retcode(RetCode::NOT_FOUND_SERVICE);
+                    _connection->send(msg_rsp);
+                    return;
+                }
                 msg_rsp->set_address(std::move(hosts));
                 msg_rsp->set_method(_req->get_method());
                 msg_rsp->set_retcode(RetCode::SUCCESS);

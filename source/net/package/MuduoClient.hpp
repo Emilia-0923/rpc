@@ -36,7 +36,7 @@ namespace rpc {
             auto base_buffer = BufferFactory::create(_buf);
             while(true) {
                 if(!protocol->can_process(base_buffer)) {
-                    logging.info("数据包不完整，等待数据包继续接收!"); 
+                    // logging.info("数据包不完整，等待数据包继续接收!"); 
                     if(base_buffer->read_able_size() > max_data_length) {
                         logging.info("数据包过大，关闭连接!"); 
                         _conn->shutdown();

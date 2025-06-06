@@ -13,14 +13,13 @@ namespace rpc {
 
             RegistryClient(const std::string& ip, int port)
                 : requestor(std::make_shared<Requestor>())
-                , provider(std::make_shared<Provider>())
+                , provider(std::make_shared<Provider>(requestor))
                 , dispatcher(std::make_shared<Dispatcher>())
-                , base_client(std::make_shared<BaseClient>())
             {
-                auto rsp_cb = std::bind(Requestor::on_response, requestor, std::placeholders::_1, std::placeholders::_2);
+                auto rsp_cb = std::bind(&Requestor::on_response, requestor, std::placeholders::_1, std::placeholders::_2);
                 dispatcher->register_handler<BaseMessage>(MsgType::RSP_SERVICE, rsp_cb);
                 
-                auto msg_cb = std::bind(Dispatcher::on_message, dispatcher, std::placeholders::_1, std::placeholders::_2);
+                auto msg_cb = std::bind(&Dispatcher::on_message, dispatcher, std::placeholders::_1, std::placeholders::_2);
                 base_client = ClientFactory::create(ip, port);
                 base_client->set_message_cb(msg_cb);
                 base_client->connect();
@@ -47,13 +46,13 @@ namespace rpc {
                 , discoverer(std::make_shared<Discoverer>(requestor, cb))
                 , dispatcher(std::make_shared<Dispatcher>())
             {
-                auto rsp_cb = std::bind(Requestor::on_response, requestor, std::placeholders::_1, std::placeholders::_2);
+                auto rsp_cb = std::bind(&Requestor::on_response, requestor, std::placeholders::_1, std::placeholders::_2);
                 dispatcher->register_handler<BaseMessage>(MsgType::RSP_SERVICE, rsp_cb);
                 
-                auto req_cb = std::bind(Discoverer::on_service_request, discoverer, std::placeholders::_1, std::placeholders::_2);
+                auto req_cb = std::bind(&Discoverer::on_service_request, discoverer, std::placeholders::_1, std::placeholders::_2);
                 dispatcher->register_handler<ServiceRequest>(MsgType::REQ_SERVICE, req_cb);
 
-                auto msg_cb = std::bind(Dispatcher::on_message, dispatcher, std::placeholders::_1, std::placeholders::_2);
+                auto msg_cb = std::bind(&Dispatcher::on_message, dispatcher, std::placeholders::_1, std::placeholders::_2);
                 base_client = ClientFactory::create(ip, port);
                 base_client->set_message_cb(msg_cb);
                 base_client->connect();
@@ -82,7 +81,7 @@ namespace rpc {
                 , caller(std::make_shared<RpcCaller>(requestor))
                 , dispatcher(std::make_shared<Dispatcher>())
             {
-                auto rsp_cb = std::bind(Requestor::on_response, requestor, std::placeholders::_1, std::placeholders::_2);
+                auto rsp_cb = std::bind(&Requestor::on_response, requestor, std::placeholders::_1, std::placeholders::_2);
                 dispatcher->register_handler<BaseMessage>(MsgType::RSP_RPC, rsp_cb);
 
                 if(enable_discovery) {
@@ -91,33 +90,27 @@ namespace rpc {
                 }
                 else {
                     // 未启用服务发现时直接创建一个基础客户端
-                    rpc_client = create_client({ip, port});
+                    rpc_client = ClientFactory::create(ip, port);
+                    auto msg_cb = std::bind(&Dispatcher::on_message, dispatcher, std::placeholders::_1, std::placeholders::_2);
+                    rpc_client->set_message_cb(msg_cb);
+                    rpc_client->connect();
                 }
             }
 
             bool sync_call(const std::string& method, const std::vector<PBValue>& param, PBValue& result) {
-                BaseClient::ptr client;
-                if(enable_discovery) {
-                    Address host;
-                    if(!discovery_client->service_discovery(method, host)) {
-                        logging.error("RpcClient::sync_call 服务发现失败");
-                        return false;
-                    }
-                    client = get_client(host);
-                    if(!client) {
-                        client = create_client(host);
-                    }
+                BaseClient::ptr client = get_client(method);
+                if(!client) {
+                    logging.error("RpcClient::sync_call 获取客户端失败, method: %s", method.c_str());
+                    return false;
                 }
-                else {
-                    client = rpc_client;
-                }
+                logging.debug("RpcClient::sync_call 获取客户端成功, method: %s", method.c_str());
                 return caller->sync_call(client->get_connection(), method, param, result);
             }
 
             bool async_call(const std::string& method, const std::vector<PBValue>& param, RpcCaller::PBAsyncResponse& result) {
                 BaseClient::ptr client = get_client(method);
                 if(!client) {
-                    logging.error("RpcClient::async_call 获取客户端失败, method: {}", method);
+                    logging.error("RpcClient::async_call 获取客户端失败, method: %s", method.c_str());
                     return false;
                 }
                 return caller->async_call(client->get_connection(), method, param, result);
@@ -126,7 +119,7 @@ namespace rpc {
             bool callback_call(const std::string& method, const std::vector<PBValue>& param, const RpcCaller::PBResponseCallback& cb) {
                 BaseClient::ptr client = get_client(method);
                 if(!client) {
-                    logging.error("RpcClient::callback_call 获取客户端失败, method: {}", method);
+                    logging.error("RpcClient::callback_call 获取客户端失败, method: %s", method.c_str());
                     return false;
                 }
                 return caller->callback_call(client->get_connection(), method, param, cb);
@@ -140,7 +133,7 @@ namespace rpc {
                     logging.error("RpcClient::create_client 创建客户端失败, host: {}", host.first);
                     return BaseClient::ptr();
                 }
-                auto msg_cb = std::bind(Dispatcher::on_message, dispatcher, std::placeholders::_1, std::placeholders::_2);
+                auto msg_cb = std::bind(&Dispatcher::on_message, dispatcher, std::placeholders::_1, std::placeholders::_2);
                 client->set_message_cb(msg_cb);
                 client->connect();
                 add_client(host, client);
@@ -164,20 +157,17 @@ namespace rpc {
                     if(discovery_client->service_discovery(method, host)) {
                         client = get_client(host);
                         if(!client) {
-                            logging.error("RpcClient::get_client 获取客户端失败, method: {}", method);
+                            client = create_client(host);
                         }
                     }
                     else {
-                        logging.error("RpcClient::get_client 服务发现失败, method: {}", method);
+                        logging.error("RpcClient::get_client 服务发现失败, 没有找到服务提供者, method: %s", method.c_str());
+                        return BaseClient::ptr();
                     }
                 }
                 else {
                     // 未启用服务发现时直接使用基础客户端
                     client = rpc_client;
-                    if(!client || !client->is_connected()) {
-                        logging.error("RpcClient::get_client 基础客户端未连接, method: {}", method);
-                        return BaseClient::ptr();
-                    }
                 }
                 return client;
             }

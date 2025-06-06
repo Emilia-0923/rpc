@@ -35,7 +35,7 @@ namespace muduo
                 logging.fatal("Epoller 创建失败: %s", strerror(errno));
             }
             else {
-                logging.info("Epoller 创建成功, epoll_fd: %d!", epoll_fd);
+                // logging.info("Epoller 创建成功, epoll_fd: %d!", epoll_fd);
             }
         }
 

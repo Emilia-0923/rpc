@@ -20,6 +20,7 @@ namespace rpc {
                 msg_req->set_address(_host);
                 msg_req->set_optype(ServiceOptype::REGISTRY);
                 BaseMessage::ptr base_rsp;
+                logging.debug("Provider::registry_method 发送请求: %s", msg_req->get_method().c_str());
                 if(!requestor->sync_send(_connection, msg_req, base_rsp)) {
                     logging.error("Provider::registry_method 发送请求失败");
                     return false;
@@ -44,7 +45,12 @@ namespace rpc {
         public:
             using ptr = std::shared_ptr<MethodHost>;
 
-            MethodHost(const std::vector<Address>& _hosts) : hosts(_hosts) {}
+            MethodHost() : index(0) {}
+
+            MethodHost(const std::vector<Address>& _hosts)
+                : index(0)
+                , hosts(_hosts.begin(), _hosts.end())
+            {}
 
             // 添加host
             void append_host(const Address& _host) {
@@ -55,7 +61,12 @@ namespace rpc {
             // 移除host
             void remove_host(const Address& _host) {
                 std::lock_guard<std::mutex> lock(mtx);
-                hosts.erase(std::remove(hosts.begin(), hosts.end(), _host), hosts.end());
+                for(auto it = hosts.begin(); it != hosts.end(); ++it) {
+                    if(*it == _host) {
+                        hosts.erase(it);
+                        break;
+                    }
+                }
             }
 
             // 获取下一个host
@@ -67,6 +78,7 @@ namespace rpc {
 
             // 判断是否为空
             bool empty() {
+                std::lock_guard<std::mutex> lock(mtx);
                 return hosts.empty();
             }
         private:
@@ -103,8 +115,7 @@ namespace rpc {
                 msg_req->set_optype(ServiceOptype::DISCOVERY);
                 BaseMessage::ptr base_rsp;
                 if(!requestor->sync_send(_connection, msg_req, base_rsp)) {
-                    logging.error
-                    ("Discoverer::service_discovery 发送请求失败");
+                    logging.error("Discoverer::service_discovery 发送请求失败");
                     return false;
                 }
                 auto msg_rsp = std::dynamic_pointer_cast<ServiceResponse>(base_rsp);
@@ -117,9 +128,9 @@ namespace rpc {
                     return false;
                 }
                 std::lock_guard<std::mutex> lock(mtx);
-                auto method_host = std::make_shared<MethodHost>(0, msg_rsp->get_address());
-                if(method_hosts.empty()) {
-                    logging.error("Discoverer::service_discovery 没有能够提供服务的节点, %s", msg_rsp->get_method().c_str());
+                auto method_host = std::make_shared<MethodHost>(msg_rsp->get_address());
+                if(method_host->empty()) {
+                    logging.error("Discoverer::service_discovery 发现服务失败, 没有可用的host");
                     return false;
                 }
                 _host = method_host->get_host();
@@ -135,7 +146,8 @@ namespace rpc {
                         it->second->append_host(_req->get_address());
                     }
                     else {
-                        auto method_host = std::make_shared<MethodHost>(0, std::vector<Address>{_req->get_address()});
+                        auto method_host = std::make_shared<MethodHost>();
+                        method_host->append_host(_req->get_address());
                         method_hosts[_req->get_method()] = method_host;
                     }
                 }

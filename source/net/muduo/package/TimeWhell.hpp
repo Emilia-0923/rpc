@@ -84,7 +84,7 @@ namespace muduo
             itime.it_interval.tv_sec = 1;
             itime.it_interval.tv_nsec = 0; //第一次超时后，每次超时的间隔时
             timerfd_settime(timerfd, 0, &itime, NULL);
-            logging.info("TimerFd 创建成功, timer_fd: %d!", timerfd);
+            // logging.info("TimerFd 创建成功, timer_fd: %d!", timerfd);
             return timerfd;
         }
 

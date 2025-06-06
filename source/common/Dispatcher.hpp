@@ -38,6 +38,7 @@ namespace rpc {
         void register_handler(MsgType type, const typename CallBack<PBMessage>::MessageCallBack& handler) {
             std::lock_guard<std::mutex> lock(mtx);
             auto cb = std::make_shared<CallBack<PBMessage>>(handler);
+            logging.debug("Dispatcher::register_handler: 注册消息处理函数, msg_type: %d", type);
             handlers[type] = cb;
         }
 
@@ -47,6 +48,7 @@ namespace rpc {
             if (it == handlers.end()) {
                 logging.fatal("Dispatcher::on_message: 没有对应的处理函数, msg_type: %d", msg->get_type());
                 conn->shutdown();
+                return;
             }
             it->second->on_message(conn, msg);
         }

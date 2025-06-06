@@ -98,34 +98,34 @@ namespace muduo
 
         //启用可读状态
         void enable_read() {
-            logging.debug("fd: %d, 启用可读状态!", fd);
+            // logging.debug("fd: %d, 启用可读状态!", fd);
             event |= EPOLLIN;
             update();
         }
 
         //启用可写状态
         void enable_write() {
-            logging.debug("fd: %d, 启用可写状态!", fd);
+            // logging.debug("fd: %d, 启用可写状态!", fd);
             event |= EPOLLOUT;
             update();
         }
 
         //关闭可读状态
         void disable_read() {
-            logging.debug("fd: %d, 关闭可读状态!", fd);
+            // logging.debug("fd: %d, 关闭可读状态!", fd);
             event &= ~EPOLLIN;
             update();
         }
 
         //关闭可写状态
         void disable_write() {
-            logging.debug("fd: %d, 关闭可写状态!", fd);
+            // logging.debug("fd: %d, 关闭可写状态!", fd);
             event &= ~EPOLLOUT;
             update();
         }
 
         void disable_all() {
-            logging.debug("fd: %d, 清除了所有的状态!", fd);
+            // logging.debug("fd: %d, 清除了所有的状态!", fd);
             event = 0;
             update();
         }
@@ -141,21 +141,21 @@ namespace muduo
             //可写
             if (revent & EPOLLOUT) {
                 if (write_cb) {
-                    logging.debug("fd: %d, 调用了写事件回调函数: %p!", fd, write_cb);
+                    // logging.debug("fd: %d, 调用了写事件回调函数: %p!", fd, write_cb);
                     write_cb();
                 }
             }
             //错误
             else if (revent & EPOLLERR) {
                 if (error_cb) {
-                    logging.debug("fd: %d, 调用了错误事件回调函数: %p!", fd, error_cb);
+                    // logging.debug("fd: %d, 调用了错误事件回调函数: %p!", fd, error_cb);
                     error_cb();
                 }
             }
             //先读取完缓冲区的数据, 再关闭
             else if (revent & EPOLLHUP) {
                 if (close_cb) {
-                    logging.debug("fd: %d, 调用了断连事件回调函数: %p!", fd, close_cb);
+                    // logging.debug("fd: %d, 调用了断连事件回调函数: %p!", fd, close_cb);
                     close_cb();
                 }
             }

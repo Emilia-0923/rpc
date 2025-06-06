@@ -1,10 +1,6 @@
-#include "../source/server/RpcRouter.hpp"
-#include "../source/common/Dispatcher.hpp"
-#include "../source/net/factory/ServerFactory.hpp"
-#include "../source/net/factory/ConnectionFactory.hpp"
-#include "../source/net/factory/MessageFactory.hpp"
-#include "../source/net/factory/BufferFactory.hpp"
-#include "../source/net/factory/ProtocolFactory.hpp"
+#include "../source/common/Fields.hpp"
+#include "../source/server/RpcServer.hpp"
+
 
 void Add(const std::vector<rpc::PBValue>& params, rpc::PBValue& result) {
     int num1 = params[0].number_value();
@@ -21,15 +17,8 @@ int main() {
     service_factory->set_return_type(rpc::server::ValueType::INTEGRAL);
     service_factory->set_callback(Add);
 
-    auto router = std::make_shared<rpc::server::RpcRouter>();
-    router->register_method(service_factory->create());
-
-    auto cb = std::bind(&rpc::server::RpcRouter::on_rpc_request, router.get(), std::placeholders::_1, std::placeholders::_2);
-    dispatcer->register_handler<rpc::RpcRequest>(rpc::MsgType::REQ_RPC, cb);
-
-    auto server = rpc::ServerFactory::create(9090);
-    auto message_cb = std::bind(&rpc::Dispatcher::on_message, dispatcer.get(), std::placeholders::_1, std::placeholders::_2);
-    server->set_message_cb(message_cb);
+    auto server = std::make_shared<rpc::server::RpcServer>(rpc::Address("127.0.0.1", 30001), true, rpc::Address("127.0.0.1", 30002));
+    server->register_method(service_factory->create());
     server->start();
     return 0;
 }

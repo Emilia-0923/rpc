@@ -79,7 +79,7 @@ namespace muduo
                 logging.fatal("Socket::create 创建错误, %s: %d.", strerror(errno), errno);
                 exit(Error::SocketErr);
             }
-            logging.info("Socket 创建成功, socket_fd: %d!", socket_fd);
+            // logging.info("Socket 创建成功, socket_fd: %d!", socket_fd);
         }
 
         void remove(){
