@@ -150,6 +150,12 @@ namespace rpc {
             : service_manager(std::make_shared<ServiceManager>()) {}
 
             void on_rpc_request(const BaseConnection::ptr& _conn, const RpcRequest::ptr& _req) {
+                // 检查请求
+                if (!_req->check()) {
+                    logging.error("RpcRouter::on_rpc_request RPC请求格式错误: %s", _req->get_method().c_str());
+                    response(_conn, _req, PBValue(), RetCode::INVALID_MSG);
+                    return;
+                }
                 // 查询服务
                 ServiceDiscribe::ptr service = service_manager->select(_req->get_method());
                 if (!service.get()) {

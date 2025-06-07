@@ -19,9 +19,9 @@ namespace rpc
                 logging.error("RpcRequest 方法名字段不存在或类型不是string!");
                 return false;
             }
-            // 如果params字段不存在，或者类型不为string，则返回false
-            if (!params_field || params_field->cpp_type() != PBFieldDescriptor::CPPTYPE_STRING || !params_field->is_repeated()) {
-                logging.error("RpcRequest 参数字段不存在或类型不是repeated string!");
+            // 如果params字段存在，且类型不为PBValue，则返回false
+            if (params_field && params_field->cpp_type() != PBFieldDescriptor::CPPTYPE_MESSAGE) {
+                logging.error("RpcRequest 参数字段存在但类型不是PBValue!");
                 return false;
             }
             return true;

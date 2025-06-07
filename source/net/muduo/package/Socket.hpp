@@ -65,7 +65,7 @@ namespace muduo
         }
 
         ~Socket() {
-            logging.debug("Socket::~Socket()");
+            // logging.debug("Socket::~Socket()");
             remove();
         }
         
@@ -84,7 +84,7 @@ namespace muduo
 
         void remove(){
             if (socket_fd != -1) {
-                logging.debug("关闭了套接字fd: %d", socket_fd);
+                // logging.debug("关闭了套接字fd: %d", socket_fd);
                 close(socket_fd);
                 socket_fd = -1;
             }
@@ -223,7 +223,7 @@ namespace muduo
                     return 0;
                 }
                 else if (errno == 0) {
-                    logging.info("Socket_fd: %d, 关闭了连接: %s!", socket_fd, strerror(errno));
+                    // logging.info("Socket_fd: %d, 关闭了连接: %s!", socket_fd, strerror(errno));
                     return -1;
                 }
                 else {

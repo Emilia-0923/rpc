@@ -45,7 +45,7 @@ namespace muduo
                 tasks.swap(ready_tasks);
             }
             for (auto& task : ready_tasks) {
-                logging.debug("当前执行的任务: %p", task);
+                // logging.debug("当前执行的任务: %p", task);
                 task();
             }
         }

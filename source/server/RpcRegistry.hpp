@@ -180,6 +180,11 @@ namespace rpc {
             {}
 
             void on_service_request(const BaseConnection::ptr _connection, const ServiceRequest::ptr _req) {
+                // 先检查请求是否合法
+                if (!_req->check()) {
+                    logging.error("PDManager::on_service_request 请求格式错误: %s", _req->get_method().c_str());
+                    return;
+                }                
                 ServiceOptype optype = _req->get_optype();
                 if (optype == ServiceOptype::REGISTRY) {
                     logging.debug("PDManager::on_service_request: %s:%d 服务注册请求, method: %s", _req->get_address().first.c_str(), _req->get_address().second, _req->get_method().c_str());

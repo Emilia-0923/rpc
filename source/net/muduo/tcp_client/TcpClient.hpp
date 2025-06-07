@@ -35,7 +35,7 @@ namespace muduo {
         }
 
         ~TcpClient() {
-            logging.debug("TcpClient::~TcpClient()");
+            // logging.debug("TcpClient::~TcpClient()");
             if(is_connected) {
                 disconnect();
             }

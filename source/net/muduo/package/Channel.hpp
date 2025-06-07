@@ -35,7 +35,7 @@ namespace muduo
         }
 
         ~Channel() {
-            logging.debug("Channel::~Channel()");
+            // logging.debug("Channel::~Channel()");
         }
 
         void remove();

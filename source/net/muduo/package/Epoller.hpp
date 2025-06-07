@@ -51,7 +51,7 @@ namespace muduo
             bool ret = has_channel(_channel);
             int fd = _channel->get_fd();
             if (fcntl(fd, F_GETFD) == -1) {
-                logging.warning("fd: %d 已经被关闭，跳过 epoll 移除操作", fd);
+                // logging.warning("fd: %d 已经被关闭，跳过 epoll 移除操作", fd);
                 return;
             }
             epoll_event event;
@@ -73,7 +73,7 @@ namespace muduo
         void remove(Channel* _channel) {
             int fd = _channel->get_fd();
             if (fcntl(fd, F_GETFD) == -1) {
-                logging.warning("fd: %d 已经被关闭，跳过 epoll 移除操作", fd);
+                // logging.warning("fd: %d 已经被关闭，跳过 epoll 移除操作", fd);
                 return;
             }
             auto it = channels.find(fd);

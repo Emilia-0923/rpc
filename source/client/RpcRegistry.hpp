@@ -139,6 +139,11 @@ namespace rpc {
             }
 
             void on_service_request(const BaseConnection::ptr& _connection, const ServiceRequest::ptr& _req) {
+                // 先检查请求是否合法
+                if (!_req->check()) {
+                    logging.error("Discoverer::on_service_request 请求格式错误: %s", _req->get_method().c_str());
+                    return;
+                }
                 std::unique_lock<std::mutex> lock(mtx);
                 if(_req->get_optype() == ServiceOptype::ONLINE) {
                     auto it = method_hosts.find(_req->get_method());
